@@ -1,40 +1,40 @@
 #include <catch2/catch2.hpp>
 #include <chowdsp_wdf/chowdsp_wdf.h>
 
-using namespace chowdsp::wdf;
+using namespace chowdsp::wdft;
 
-TEST_CASE("Basic Circuits Test")
+TEST_CASE("Static Basic Circuits Test")
 {
     SECTION("Voltage Divider")
     {
-        Resistor<float> r1 (10000.0f);
-        Resistor<float> r2 (10000.0f);
+        ResistorT<float> r1 (10000.0f);
+        ResistorT<float> r2 (10000.0f);
 
-        WDFSeries<float> s1 (&r1, &r2);
-        PolarityInverter<float> p1 (&s1);
-        IdealVoltageSource<float> vs { &p1 };
+        auto s1 = makeSeries<float> (r1, r2);
+        auto p1 = makeInverter<float> (s1);
+        IdealVoltageSourceT<float, decltype (p1)> vs { p1 };
 
         vs.setVoltage (10.0f);
         vs.incident (p1.reflected());
         p1.incident (vs.reflected());
 
-        auto vOut = r2.voltage();
+        auto vOut = voltage<float> (r2);
         REQUIRE (vOut == 5.0f);
     }
 
     SECTION("Current Divider Test")
     {
-        Resistor<float> r1 (10000.0f);
-        Resistor<float> r2 (10000.0f);
+        ResistorT<float> r1 (10000.0f);
+        ResistorT<float> r2 (10000.0f);
 
-        WDFParallel<float> p1 (&r1, &r2);
-        IdealCurrentSource<float> is (&p1);
+        auto p1 = makeParallel<float> (r1, r2);
+        IdealCurrentSourceT<float, decltype (p1)> is (p1);
 
         is.setCurrent (1.0f);
         is.incident (p1.reflected());
         p1.incident (is.reflected());
 
-        auto iOut = r2.current();
+        auto iOut = current<float> (r2);
         REQUIRE (iOut == 0.5f);
     }
 
@@ -44,25 +44,25 @@ TEST_CASE("Basic Circuits Test")
         constexpr auto thermalVoltage = 25.85e-3;
         constexpr auto voltage = -0.35;
 
-        ResistiveVoltageSource<double> Vs;
-        PolarityInverter<double> I1 { &Vs };
-        Diode<double> D1 { &I1, saturationCurrent, thermalVoltage };
+        ResistiveVoltageSourceT<double> Vs;
+        auto I1 = makeInverter<double> (Vs);
+        DiodeT<double, decltype (I1)> D1 { I1, saturationCurrent, thermalVoltage };
 
         Vs.setVoltage (voltage);
         D1.incident (I1.reflected());
         I1.incident (D1.reflected());
 
         auto expectedCurrent = saturationCurrent * (std::exp (-voltage / thermalVoltage) - 1.0);
-        REQUIRE(D1.current() == Approx (expectedCurrent).margin(1.0e-3));
+        REQUIRE(current<double> (D1) == Approx (expectedCurrent).margin(1.0e-3));
     }
 
     SECTION("Current Switch")
     {
-        Resistor<float> r1 (10000.0f);
-        ResistiveCurrentSource<float> Is;
+        ResistorT<float> r1 (10000.0f);
+        ResistiveCurrentSourceT<float> Is;
 
-        WDFSeries<float> s1 (&r1, &Is);
-        Switch<float> sw { &s1 };
+        auto s1 = makeSeries<float> (r1, Is);
+        SwitchT<float, decltype (s1)> sw { s1 };
 
         // run with switch closed
         sw.setClosed (true);
@@ -70,7 +70,7 @@ TEST_CASE("Basic Circuits Test")
         sw.incident (s1.reflected());
         s1.incident (sw.reflected());
 
-        auto currentClosed = r1.current();
+        auto currentClosed = current<float> (r1);
         REQUIRE (currentClosed == Approx (-1.0f).margin (1.0e-3f));
 
         // run with switch open
@@ -78,7 +78,7 @@ TEST_CASE("Basic Circuits Test")
         sw.incident (s1.reflected());
         s1.incident (sw.reflected());
 
-        auto currentOpen = r1.current();
+        auto currentOpen = current<float> (r1);
         REQUIRE (currentOpen == 0.0f);
     }
 
@@ -88,18 +88,18 @@ TEST_CASE("Basic Circuits Test")
         constexpr auto y12 = 0.22;
         constexpr auto y21 = 0.33;
         constexpr auto y22 = 0.44;
-        constexpr auto voltage = 2.0;
+        constexpr auto V = 2.0;
 
-        Resistor<double> res { 10000.0 };
-        YParameter<double> yParam { &res, y11, y12, y21, y22 };
-        IdealVoltageSource<double> Vs { &yParam };
+        ResistorT<double> res { 10000.0 };
+        YParameterT<double, decltype (res)> yParam { res, y11, y12, y21, y22 };
+        IdealVoltageSourceT<double, decltype (yParam)> Vs { yParam };
 
-        Vs.setVoltage (voltage);
+        Vs.setVoltage (V);
         Vs.incident (yParam.reflected());
         yParam.incident (Vs.reflected());
 
-        REQUIRE (-res.current() == Approx (y11 * res.voltage() + y12 * voltage).margin (1.0e-3));
-        REQUIRE (yParam.current() == Approx (y21 * res.voltage() + y22 * voltage).margin (1.0e-3));
+        REQUIRE (-current<double> (res) == Approx (y11 * voltage<double> (res) + y12 * V).margin (1.0e-3));
+        REQUIRE (current<double> (yParam) == Approx (y21 * voltage<double> (res) + y22 * V).margin (1.0e-3));
     }
 
     SECTION("RC Lowpass")
@@ -110,12 +110,12 @@ TEST_CASE("Basic Circuits Test")
         constexpr auto capValue = 1.0e-6;
         constexpr auto resValue = 1.0 / ((2 * M_PI) * fc * capValue);
 
-        Capacitor<double> c1 (capValue, fs);
-        Resistor<double> r1 (resValue);
+        CapacitorT<double> c1 (capValue, fs);
+        ResistorT<double> r1 (resValue);
 
-        WDFSeries<double> s1 (&r1, &c1);
-        PolarityInverter<double> p1 (&s1);
-        IdealVoltageSource<double> vs { &p1 };
+        auto s1 = makeSeries<double> (r1, c1);
+        auto p1 = makeInverter<double> (s1);
+        IdealVoltageSourceT<double, decltype (p1)> vs { p1 };
 
         auto testFreq = [&](double freq, double expectedMagDB)
         {
@@ -130,7 +130,7 @@ TEST_CASE("Basic Circuits Test")
                 vs.incident (p1.reflected());
                 p1.incident (vs.reflected());
 
-                const auto y = c1.voltage();
+                const auto y = voltage<double> (c1);
 
                 if (n > 1000)
                     magnitude = std::max (magnitude, std::abs (y));
@@ -165,7 +165,7 @@ TEST_CASE("Basic Circuits Test")
                 vs.incident (p1.reflected());
                 p1.incident (vs.reflected());
 
-                const auto y = l1.voltage();
+                const auto y = voltage<float> (l1);
 
                 if (n > 1000)
                     magnitude = std::max (magnitude, std::abs (y));
@@ -177,14 +177,14 @@ TEST_CASE("Basic Circuits Test")
 
         // reference filter
         {
-            Capacitor<float> c1 (C);
-            Resistor<float> r1 (R);
-            Inductor<float> l1 (L);
+            CapacitorT<float> c1 (C);
+            ResistorT<float> r1 (R);
+            InductorT<float> l1 (L);
 
-            WDFSeries<float> s1 (&r1, &c1);
-            WDFSeries<float> s2 (&s1, &l1);
-            PolarityInverter<float> p1 (&s2);
-            IdealVoltageSource<float> vs { &p1 };
+            auto s1 = makeSeries<float> (r1, c1);
+            auto s2 = makeSeries<float> (s1, l1);
+            auto p1 = makeInverter<float> (s2);
+            IdealVoltageSourceT<float, decltype (p1)> vs { p1 };
 
             c1.prepare (fs);
             l1.prepare (fs);
@@ -192,14 +192,14 @@ TEST_CASE("Basic Circuits Test")
             testFreq (10.0e3f, 0.0f, vs, p1, l1);
         }
 
-        CapacitorAlpha<float> c1 (C);
-        Resistor<float> r1 (R);
-        InductorAlpha<float> l1 (L);
+        CapacitorAlphaT<float> c1 (C);
+        ResistorT<float> r1 (R);
+        InductorAlphaT<float> l1 (L);
 
-        WDFSeries<float> s1 (&r1, &c1);
-        WDFSeries<float> s2 (&s1, &l1);
-        PolarityInverter<float> p1 (&s2);
-        IdealVoltageSource<float> vs { &p1 };
+        auto s1 = makeSeries<float> (r1, c1);
+        auto s2 = makeSeries<float> (s1, l1);
+        auto p1 = makeInverter<float> (s2);
+        IdealVoltageSourceT<float, decltype (p1)> vs { p1 };
 
         // alpha = 1.0 filter
         {
@@ -237,9 +237,9 @@ TEST_CASE("Basic Circuits Test")
 
         auto checkImpedanceProp = [=] (auto component, float value1, float value2, auto changeFunc, auto impedanceCalc) {
             constexpr float otherR = 5000.0f;
-            Resistor<float> r2 { otherR };
-            WDFSeries<float> s1 (&component, &r2);
-            IdealCurrentSource<float> is (&s1);
+            ResistorT<float> r2 { otherR };
+            auto s1 = makeSeries<float> (component, r2);
+            IdealCurrentSourceT<float, decltype (s1)> is (s1);
             is.setCurrent (1.0f);
 
             REQUIRE (s1.wdf.R == impedanceCalc (value1) + otherR);
@@ -257,30 +257,30 @@ TEST_CASE("Basic Circuits Test")
 
         // resistor
         doImpedanceChecks (
-            Resistor<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
+            ResistorT<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
 
         // capacitor
         doImpedanceChecks (
-            Capacitor<float> { 1.0e-6f, fs }, 1.0e-6f, 2.0e-6f, [=] (auto& c, float value) { c.setCapacitanceValue (value); }, [=] (float value) { return 1.0f / (2.0f * value * (float) fs); });
+            CapacitorT<float> { 1.0e-6f, fs }, 1.0e-6f, 2.0e-6f, [=] (auto& c, float value) { c.setCapacitanceValue (value); }, [=] (float value) { return 1.0f / (2.0f * value * (float) fs); });
 
         // capacitor alpha
         doImpedanceChecks (
-            CapacitorAlpha<float> { 1.0e-6f, fs, 0.5f }, 1.0e-6f, 2.0e-6f, [=] (auto& c, float value) { c.setCapacitanceValue (value); }, [=] (float value) { return 1.0f / (1.5f * value * (float) fs); });
+            CapacitorAlphaT<float> { 1.0e-6f, fs, 0.5f }, 1.0e-6f, 2.0e-6f, [=] (auto& c, float value) { c.setCapacitanceValue (value); }, [=] (float value) { return 1.0f / (1.5f * value * (float) fs); });
 
         // inductor
         doImpedanceChecks (
-            Inductor<float> { 1.0f, fs }, 1.0f, 2.0f, [=] (auto& i, float value) { i.setInductanceValue (value); }, [=] (float value) { return 2.0f * value * (float) fs; });
+            InductorT<float> { 1.0f, fs }, 1.0f, 2.0f, [=] (auto& i, float value) { i.setInductanceValue (value); }, [=] (float value) { return 2.0f * value * (float) fs; });
 
         // inductor alpha
         doImpedanceChecks (
-            InductorAlpha<float> { 1.0f, fs, 0.5f }, 1.0f, 2.0f, [=] (auto& i, float value) { i.setInductanceValue (value); }, [=] (float value) { return 1.5f * value * (float) fs; });
+            InductorAlphaT<float> { 1.0f, fs, 0.5f }, 1.0f, 2.0f, [=] (auto& i, float value) { i.setInductanceValue (value); }, [=] (float value) { return 1.5f * value * (float) fs; });
 
         // resistive voltage source
         doImpedanceChecks (
-            ResistiveVoltageSource<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
+            ResistiveVoltageSourceT<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
 
         // resistive current source
         doImpedanceChecks (
-            ResistiveCurrentSource<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
+            ResistiveCurrentSourceT<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
     }
 }

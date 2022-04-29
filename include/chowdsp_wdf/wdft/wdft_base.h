@@ -1,0 +1,82 @@
+#ifndef CHOWDSP_WDF_WDFT_BASE_H
+#define CHOWDSP_WDF_WDFT_BASE_H
+
+#include <type_traits>
+
+namespace chowdsp
+{
+namespace wdft
+{
+#if WDF_USING_JUCE
+    using namespace SIMDUtils;
+#endif // WDF_USING_JUCE
+
+    /** Base WDF class for propagating impedance changes between elements */
+    class BaseWDF
+    {
+    public:
+        void connectToParent (BaseWDF* p) { parent = p; }
+
+        virtual void calcImpedance() = 0;
+
+        inline virtual void propagateImpedanceChange()
+        {
+            calcImpedance();
+
+            if (parent != nullptr)
+                parent->propagateImpedanceChange();
+        }
+
+    protected:
+        BaseWDF* parent = nullptr;
+    };
+
+    /** Base class for propagating impedance changes into root WDF elements */
+    class RootWDF : public BaseWDF
+    {
+    public:
+        inline void propagateImpedanceChange() override { calcImpedance(); }
+
+    private:
+        // don't try to connect root nodes!
+        void connectToParent (BaseWDF*) {}
+    };
+
+#ifndef DOXYGEN
+    /** Helper struct for common WDF member variables */
+    template <typename T>
+    struct WDFMembers
+    {
+#if WDF_USING_JUCE
+        using NumericType = typename juce::dsp::SampleTypeHelpers::ElementType<T>::Type;
+#else
+        using NumericType = T;
+#endif
+        T R = (NumericType) 1.0e-9; /* impedance */
+        T G = (T) 1.0 / R; /* admittance */
+        T a = (T) 0.0; /* incident wave */
+        T b = (T) 0.0; /* reflected wave */
+    };
+
+    /** Type alias for a SIMD numeric type */
+    template <typename T>
+    using NumericType = typename WDFMembers<T>::NumericType;
+#endif // DOXYGEN
+
+    /** Probe the voltage across this circuit element. */
+    template <typename T, typename WDFType>
+    inline T voltage (const WDFType& wdf) noexcept
+    {
+        return (wdf.wdf.a + wdf.wdf.b) * (T) 0.5;
+    }
+
+    /**Probe the current through this circuit element. */
+    template <typename T, typename WDFType>
+    inline T current (const WDFType& wdf) noexcept
+    {
+        return (wdf.wdf.a - wdf.wdf.b) * ((T) 0.5 * wdf.wdf.G);
+    }
+}
+}
+
+#endif // CHOWDSP_WDF_WDFT_BASE_H

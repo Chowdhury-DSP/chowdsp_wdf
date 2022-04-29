@@ -4,6 +4,7 @@ target_include_directories(chowdsp_wdf_tests PRIVATE .)
 target_sources(chowdsp_wdf_tests
     PRIVATE
         BasicCircuitTest.cpp
+        StaticBasicCircuitTest.cpp
         TestRunner.cpp
 )
 
