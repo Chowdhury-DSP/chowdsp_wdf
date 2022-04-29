@@ -7,4 +7,4 @@
 
 #include "wdft/wdft.h"
 #include "wdf/wdf.h"
-//#include "r_type.h"
+#include "rtype/rtype.h"

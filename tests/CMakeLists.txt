@@ -5,6 +5,8 @@ target_sources(chowdsp_wdf_tests
     PRIVATE
         BasicCircuitTest.cpp
         StaticBasicCircuitTest.cpp
+        OmegaTest.cpp
+        RTypeTest.cpp
         TestRunner.cpp
 )
 
