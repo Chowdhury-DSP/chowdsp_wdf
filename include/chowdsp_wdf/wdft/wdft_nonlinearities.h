@@ -85,7 +85,7 @@ namespace wdft
             reflectedInternal() noexcept
         {
             // See eqn (18) from reference paper
-            T lambda = (T) signum (wdf.a);
+            T lambda = (T) signum::signum (wdf.a);
             wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * Omega::omega4 (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
         }
 
@@ -95,7 +95,7 @@ namespace wdft
             reflectedInternal() noexcept
         {
             // See eqn (39) from reference paper
-            T lambda = (T) signum (wdf.a);
+            T lambda = (T) signum::signum (wdf.a);
             T lambda_a_over_vt = lambda * wdf.a * oneOverVt;
             wdf.b = wdf.a - twoVt * lambda * (Omega::omega4 (logR_Is_overVt + lambda_a_over_vt) - Omega::omega4 (logR_Is_overVt - lambda_a_over_vt));
         }

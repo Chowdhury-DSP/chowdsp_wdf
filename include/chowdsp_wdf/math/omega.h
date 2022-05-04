@@ -197,7 +197,7 @@ namespace Omega
     inline xsimd::batch<T> omega2 (xsimd::batch<T> x)
     {
         constexpr auto size = xsimd::batch<T>::size;
-        T y alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
+        T y alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
         xsimd::store_aligned (y, x);
 
         for (size_t i = 0; i < size; ++i)
@@ -211,7 +211,7 @@ namespace Omega
     inline xsimd::batch<T> omega3 (xsimd::batch<T> x)
     {
         constexpr auto size = xsimd::batch<T>::size;
-        T y alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
+        T y alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
         xsimd::store_aligned (y, x);
 
         for (size_t i = 0; i < size; ++i)
@@ -225,7 +225,7 @@ namespace Omega
     inline xsimd::batch<T> omega4 (xsimd::batch<T> x)
     {
         constexpr auto size = xsimd::batch<T>::size;
-        T y alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
+        T y alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
         xsimd::store_aligned (y, x);
 
         for (size_t i = 0; i < size; ++i)

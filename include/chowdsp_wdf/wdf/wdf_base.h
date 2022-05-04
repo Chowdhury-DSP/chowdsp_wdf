@@ -20,7 +20,7 @@ namespace wdf
         explicit WDF (std::string type) : type (std::move (type)) {}
         ~WDF() override = default;
 
-        void connectToNode (WDF<T>* p) { parent = p; }
+        void connectToNode (WDF<T>* p) { wdfParent = p; }
 
         /** Sub-classes override this function to propagate
      * an impedance change to the upstream elements in
@@ -30,8 +30,8 @@ namespace wdf
         {
             calcImpedance();
 
-            if (parent != nullptr)
-                parent->propagateImpedance();
+            if (wdfParent != nullptr)
+                wdfParent->propagateImpedance();
         }
 
         /** Sub-classes override this function to accept an incident wave. */
@@ -67,7 +67,7 @@ namespace wdf
     private:
         const std::string type;
 
-        WDF<T>* parent = nullptr;
+        WDF<T>* wdfParent = nullptr;
     };
 
     template <typename T, typename WDFType>
