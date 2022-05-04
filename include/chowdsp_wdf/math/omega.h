@@ -149,7 +149,12 @@ namespace Omega
     template <typename T>
     inline T omega1 (T x)
     {
-        return std::max (x, (T) 0);
+#if defined(XSIMD_HPP)
+        using xsimd::max;
+#endif
+        using std::max;
+
+        return max (x, (T) 0);
     }
 
     /** Second-order approximation of the Wright Omega functions */
@@ -186,44 +191,49 @@ namespace Omega
         return y - (y - exp_approx<T> (x - y)) / (y + (T) 1);
     }
 
-#if WDF_USING_JUCE
-    /** First-order approximation of the Wright Omega functions */
-    template <typename T>
-    inline juce::dsp::SIMDRegister<T> omega1 (juce::dsp::SIMDRegister<T> x)
-    {
-        return juce::dsp::SIMDRegister<T>::max (x, juce::dsp::SIMDRegister<T> (0));
-    }
-
+#if defined(XSIMD_HPP)
     /** Second-order approximation of the Wright Omega functions */
     template <typename T>
-    inline juce::dsp::SIMDRegister<T> omega2 (juce::dsp::SIMDRegister<T> x)
+    inline xsimd::batch<T> omega2 (xsimd::batch<T> x)
     {
-        auto y = juce::dsp::SIMDRegister<T> ((T) 0);
-        for (size_t i = 0; i < x.size(); ++i)
-            y.set (i, omega2 (x.get (i)));
-        return y;
+        constexpr auto size = xsimd::batch<T>::size;
+        T y alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
+        xsimd::store_aligned (y, x);
+
+        for (size_t i = 0; i < size; ++i)
+            y[i] = omega2 (y[i]);
+
+        return xsimd::load_aligned (y);
     }
 
     /** Third-order approximation of the Wright Omega functions */
     template <typename T>
-    inline juce::dsp::SIMDRegister<T> omega3 (juce::dsp::SIMDRegister<T> x)
+    inline xsimd::batch<T> omega3 (xsimd::batch<T> x)
     {
-        auto y = juce::dsp::SIMDRegister<T> ((T) 0);
-        for (size_t i = 0; i < x.size(); ++i)
-            y.set (i, omega3 (x.get (i)));
-        return y;
+        constexpr auto size = xsimd::batch<T>::size;
+        T y alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
+        xsimd::store_aligned (y, x);
+
+        for (size_t i = 0; i < size; ++i)
+            y[i] = omega3 (y[i]);
+
+        return xsimd::load_aligned (y);
     }
 
     /** Fourth-order approximation of the Wright Omega functions */
     template <typename T>
-    inline juce::dsp::SIMDRegister<T> omega4 (juce::dsp::SIMDRegister<T> x)
+    inline xsimd::batch<T> omega4 (xsimd::batch<T> x)
     {
-        auto y = juce::dsp::SIMDRegister<T> ((T) 0);
-        for (size_t i = 0; i < x.size(); ++i)
-            y.set (i, omega4 (x.get (i)));
-        return y;
+        constexpr auto size = xsimd::batch<T>::size;
+        T y alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
+        xsimd::store_aligned (y, x);
+
+        for (size_t i = 0; i < size; ++i)
+            y[i] = omega4 (y[i]);
+
+        return xsimd::load_aligned (y);
     }
-#endif // WDF_USING_JUCE
+#endif // XSIMD
 
 } // namespace Omega
 } // namespace chowdsp

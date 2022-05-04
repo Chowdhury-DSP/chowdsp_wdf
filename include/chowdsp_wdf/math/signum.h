@@ -9,13 +9,14 @@ inline int signum (T val)
     return (T (0) < val) - (val < T (0));
 }
 
-#if WDF_USING_JUCE
+#if defined(XSIMD_HPP)
 /** Signum function to determine the sign of the input. */
 template <typename T>
-inline juce::dsp::SIMDRegister<T> signumSIMD (juce::dsp::SIMDRegister<T> val)
+inline xsimd::batch<T> signum (xsimd::batch<T> val)
 {
-    auto positive = juce::dsp::SIMDRegister<T> ((T) 1) & juce::dsp::SIMDRegister<T>::lessThan (juce::dsp::SIMDRegister<T> ((T) 0), val);
-    auto negative = juce::dsp::SIMDRegister<T> ((T) 1) & juce::dsp::SIMDRegister<T>::lessThan (val, juce::dsp::SIMDRegister<T> ((T) 0));
+    using v_type = xsimd::batch<T>;
+    const auto positive = xsimd::select (val > v_type ((T) 0), v_type ((T) 1), v_type ((T) 0));
+    const auto negative = xsimd::select (val < v_type ((T) 0), v_type ((T) 1), v_type ((T) 0));
     return positive - negative;
 }
 #endif

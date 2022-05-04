@@ -5,15 +5,6 @@
 #include <initializer_list>
 #include <tuple>
 
-// Define a default SIMD alignment
-#if defined(XSIMD_HPP)
-constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = xsimd::default_arch::alignment();
-#elif WDF_USING_JUCE
-constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = juce::dsp::SIMDRegister<float>::size() * 4;
-#else
-constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = 16;
-#endif
-
 namespace chowdsp
 {
 namespace wdft
@@ -82,21 +73,6 @@ namespace wdft
                 for (int r = vec_size; r < numPorts; ++r)
                     b_[c] += S_[c][r] * a_[r];
             }
-#elif JUCE_USE_SIMD
-            using v_type = juce::dsp::SIMDRegister<T>;
-            constexpr auto simd_size = (int) v_type::size();
-            constexpr auto vec_size = numPorts - numPorts % simd_size;
-
-            for (int c = 0; c < numPorts; ++c)
-            {
-                b_[c] = (T) 0;
-                for (int r = 0; r < vec_size; r += simd_size)
-                    b_[c] += (v_type::fromRawArray (S_[c].data() + r) * v_type::fromRawArray (a_ + r)).sum();
-
-                // remainder of ops that can't be vectorized
-                for (int r = vec_size; r < numPorts; ++r)
-                    b_[c] += S_[c][r] * a_[r];
-            }
 #else // No SIMD
             for (int c = 0; c < numPorts; ++c)
             {
@@ -107,10 +83,10 @@ namespace wdft
 #endif // SIMD options
         }
 
-#if WDF_USING_JUCE
+#if defined(XSIMD_HPP)
         /** Implementation for SIMD float/double. */
         template <typename T, int numPorts>
-        inline typename std::enable_if<std::is_same<juce::dsp::SIMDRegister<float>, T>::value || std::is_same<juce::dsp::SIMDRegister<double>, T>::value, void>::type
+        inline typename std::enable_if<std::is_same<xsimd::batch<float>, T>::value || std::is_same<xsimd::batch<double>, T>::value, void>::type
             RtypeScatter (const Matrix<T, numPorts> S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
         {
             for (int c = 0; c < numPorts; ++c)
@@ -120,7 +96,7 @@ namespace wdft
                     b_[c] += S_[c][r] * a_[r];
             }
         }
-#endif // USING JUCE
+#endif // XSIMD
     } // namespace rtype_detail
 #endif // DOXYGEN
 

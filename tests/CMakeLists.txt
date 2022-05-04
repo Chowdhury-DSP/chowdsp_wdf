@@ -7,6 +7,7 @@ target_sources(chowdsp_wdf_tests
         StaticBasicCircuitTest.cpp
         OmegaTest.cpp
         RTypeTest.cpp
+        SIMDTest.cpp
         TestRunner.cpp
 )
 

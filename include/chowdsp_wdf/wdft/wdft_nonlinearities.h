@@ -53,7 +53,14 @@ namespace wdft
 
         inline void calcImpedance() override
         {
-            calcImpedanceInternal();
+#if defined(XSIMD_HPP)
+            using xsimd::log;
+#endif
+            using std::log;
+
+            R_Is = next.wdf.R * Is;
+            R_Is_overVt = R_Is * oneOverVt;
+            logR_Is_overVt = log (R_Is_overVt);
         }
 
         /** Accepts an incident wave into a WDF diode pair. */
@@ -74,7 +81,7 @@ namespace wdft
     private:
         /** Implementation for float/double (Good). */
         template <typename C = T, DiodeQuality Q = Quality>
-        inline typename std::enable_if<std::is_floating_point<C>::value && (Q == Good), void>::type
+        inline typename std::enable_if<Q == Good, void>::type
             reflectedInternal() noexcept
         {
             // See eqn (18) from reference paper
@@ -84,7 +91,7 @@ namespace wdft
 
         /** Implementation for float/double (Best). */
         template <typename C = T, DiodeQuality Q = Quality>
-        inline typename std::enable_if<std::is_floating_point<C>::value && (Q == Best), void>::type
+        inline typename std::enable_if<Q == Best, void>::type
             reflectedInternal() noexcept
         {
             // See eqn (39) from reference paper
@@ -93,54 +100,6 @@ namespace wdft
             wdf.b = wdf.a - twoVt * lambda * (Omega::omega4 (logR_Is_overVt + lambda_a_over_vt) - Omega::omega4 (logR_Is_overVt - lambda_a_over_vt));
         }
 
-        template <typename C = T>
-        inline typename std::enable_if<std::is_floating_point<C>::value, void>::type
-            calcImpedanceInternal() noexcept
-        {
-            R_Is = next.wdf.R * Is;
-            R_Is_overVt = R_Is * oneOverVt;
-            logR_Is_overVt = std::log (R_Is_overVt);
-        }
-
-#if WDF_USING_JUCE
-        /** Implementation for SIMD float/double (Good). */
-        template <typename C = T, DiodeQuality Q = Quality>
-        inline typename std::enable_if<(std::is_same<juce::dsp::SIMDRegister<float>, C>::value
-                                        || std::is_same<juce::dsp::SIMDRegister<double>, C>::value)
-                                           && (Q == Good),
-                                       void>::type
-            reflectedInternal() noexcept
-        {
-            // See eqn (18) from reference paper
-            T lambda = signumSIMD (wdf.a);
-            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * Omega::omega4 (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
-        }
-
-        /** Implementation for SIMD float/double (Best). */
-        template <typename C = T, DiodeQuality Q = Quality>
-        inline typename std::enable_if<(std::is_same<juce::dsp::SIMDRegister<float>, C>::value
-                                        || std::is_same<juce::dsp::SIMDRegister<double>, C>::value)
-                                           && (Q == Best),
-                                       void>::type
-            reflectedInternal() noexcept
-        {
-            // See eqn (39) from reference paper
-            T lambda = signumSIMD (wdf.a);
-            T lambda_a_over_vt = lambda * wdf.a * oneOverVt;
-            wdf.b = wdf.a - twoVt * lambda * (Omega::omega4 (logR_Is_overVt + lambda_a_over_vt) - Omega::omega4 (logR_Is_overVt - lambda_a_over_vt));
-        }
-
-        template <typename C = T>
-        inline typename std::enable_if<std::is_same<juce::dsp::SIMDRegister<float>, C>::value
-                                           || std::is_same<juce::dsp::SIMDRegister<double>, C>::value,
-                                       void>::type
-            calcImpedanceInternal() noexcept
-        {
-            R_Is = next.wdf.R * Is;
-            R_Is_overVt = R_Is * oneOverVt;
-            logR_Is_overVt = logSIMD (R_Is_overVt);
-        }
-#endif
         T Is; // reverse saturation current
         T Vt; // thermal voltage
 
@@ -188,7 +147,14 @@ namespace wdft
 
         inline void calcImpedance() override
         {
-            calcImpedanceInternal();
+#if defined(XSIMD_HPP)
+            using xsimd::log;
+#endif
+            using std::log;
+
+            twoR_Is = (T) 2 * next.wdf.R * Is;
+            R_Is_overVt = next.wdf.R * Is * oneOverVt;
+            logR_Is_overVt = log (R_Is_overVt);
         }
 
         /** Accepts an incident wave into a WDF diode. */
@@ -208,29 +174,6 @@ namespace wdft
         WDFMembers<T> wdf;
 
     private:
-        /** Implementation for float/double. */
-        template <typename C = T>
-        inline typename std::enable_if<std::is_floating_point<C>::value, void>::type
-            calcImpedanceInternal() noexcept
-        {
-            twoR_Is = (T) 2 * next.wdf.R * Is;
-            R_Is_overVt = next.wdf.R * Is * oneOverVt;
-            logR_Is_overVt = std::log (R_Is_overVt);
-        }
-
-#if WDF_USING_JUCE
-        /** Implementation for SIMD float/double. */
-        template <typename C = T>
-        inline typename std::enable_if<std::is_same<juce::dsp::SIMDRegister<float>, C>::value
-                                           || std::is_same<juce::dsp::SIMDRegister<double>, C>::value,
-                                       void>::type
-            calcImpedanceInternal() noexcept
-        {
-            twoR_Is = (T) 2 * next.wdf.R * Is;
-            R_Is_overVt = next.wdf.R * Is * oneOverVt;
-            logR_Is_overVt = logSIMD (R_Is_overVt);
-        }
-#endif
         T Is; // reverse saturation current
         T Vt; // thermal voltage
 
