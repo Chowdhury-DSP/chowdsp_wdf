@@ -26,9 +26,9 @@ add_subdirectory(chowdsp_wdf)
 target_link_libraries(my_cmake_target PUBLIC chowdsp_wdf)
 ```
 
-### Requirements
+### Dependencies
 - C++14 or higher
-- CMake (Version 3.1+)
+- CMake (Version 3.1+, optional)
 - XSIMD (optional, see below)
 
 ### Basic Usage
@@ -117,6 +117,8 @@ struct RCLowpass {
 RCLowpass<xsimd::batch<double>> myFilter; // instantiate the WDF to process an XSIMD type!
 ```
 
+If you are using `chowdsp_wdf` with XSIMD, please remember to abide by the XSIMD license.
+
 ## Resources
 
 The design and implementation of the library were discussed on The Audio Programmer
@@ -152,6 +154,21 @@ Wave Digital Filters", PhD. Dissertation, Stanford University, 2016,
 of Cascaded Vacuum Tube Amplifiers Using Modified Blockwise Method",
 Proc. of the 21st International Conference on Digital Audio Effects,
 2018, [link](https://www.dafx.de/paper-archive/2018/papers/DAFx2018_paper_25.pdf).
+
+## Credits
+
+The diode models in the library utilise an approximation of the Wright Omega
+function based on [Stephen D'Angelo's implementation](https://www.dangelo.audio/dafx2019-omega.html),
+which is licensed under the MIT license.
+
+Many thanks to the following individuals who have contributed to the
+theory, design, and implementation of the library:
+- Julius Smith
+- Jingjie Zhang
+- Kurt Werner
+- [Paul Walker](https://github.com/baconpaul)
+- [Eyal Amir](https://github.com/eyalamirmusic)
+- [Dirk Roosenburg](https://github.com/droosenb)
 
 ## Licensing
 
