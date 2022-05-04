@@ -32,7 +32,7 @@ namespace wdft
         template <typename T, int N>
         using Array = T[(size_t) N];
 
-        template <typename ElementType, int arraySize, int alignment = WDF_DEFAULT_SIMD_ALIGNMENT>
+        template <typename ElementType, int arraySize, int alignment = CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT>
         struct AlignedArray
         {
             ElementType& operator[] (int index) noexcept { return array[index]; }
@@ -45,7 +45,7 @@ namespace wdft
             alignas (alignment) Array<ElementType, arraySize> array;
         };
 
-        template <typename T, int nRows, int nCols = nRows, int alignment = WDF_DEFAULT_SIMD_ALIGNMENT>
+        template <typename T, int nRows, int nCols = nRows, int alignment = CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT>
         using Matrix = AlignedArray<T, nRows, alignment>[(size_t) nCols];
 
         /** Implementation for float/double. */

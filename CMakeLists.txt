@@ -4,8 +4,9 @@ include(cmake/CXXStandard.cmake)
 
 include(cmake/CPM.cmake)
 
+message(STATUS "Configuring ${PROJECT_NAME} library...")
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME}

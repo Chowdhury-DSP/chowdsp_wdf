@@ -8,12 +8,14 @@ TEST_CASE ("SIMD Circuits Test")
 {
     SECTION ("SIMD Signum Test")
     {
-        float testReg alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[xsimd::batch<float>::size] { -1.0f, 0.0f, 0.5f, 1.0f };
-        float signumReg alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[xsimd::batch<float>::size] {};
-        xsimd::store_aligned (signumReg, chowdsp::signum (xsimd::load_aligned (testReg)));
+        using chowdsp::signum::signum;
+
+        float testReg alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[xsimd::batch<float>::size] { -1.0f, 0.0f, 0.5f, 1.0f };
+        float signumReg alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[xsimd::batch<float>::size] {};
+        xsimd::store_aligned (signumReg, signum (xsimd::load_aligned (testReg)));
 
         for (size_t i = 0; i < xsimd::batch<float>::size; ++i)
-            REQUIRE (signumReg[i] == (float) chowdsp::signum (testReg[i]));
+            REQUIRE (signumReg[i] == (float) signum (testReg[i]));
     }
 
     SECTION ("Voltage Divider")
