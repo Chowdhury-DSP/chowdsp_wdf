@@ -203,7 +203,7 @@ TEST_CASE ("SIMD Circuits Test")
         }
 
         for (int i = 0; i < num; ++i)
-            REQUIRE (xsimd::all ((data2[i] < data1[i] + 1.0e-6 && data2[i] > data1[i] - 1.0e-6)));
+            REQUIRE (xsimd::all ((data2[i] < data1[i] + 1.0e-6f && data2[i] > data1[i] - 1.0e-6f)));
     }
 
     SECTION ("SIMD R-Type Test")

@@ -50,7 +50,7 @@ namespace wdft
 
         /** Implementation for float/double. */
         template <typename T, int numPorts>
-        inline typename std::enable_if<std::is_same<float, T>::value || std::is_same<double, T>::value, void>::type
+        inline typename std::enable_if<std::is_floating_point<T>::value, void>::type
             RtypeScatter (const Matrix<T, numPorts>& S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
         {
             // input matrix (S) of size dim x dim
@@ -86,8 +86,8 @@ namespace wdft
 #if defined(XSIMD_HPP)
         /** Implementation for SIMD float/double. */
         template <typename T, int numPorts>
-        inline typename std::enable_if<std::is_same<xsimd::batch<float>, T>::value || std::is_same<xsimd::batch<double>, T>::value, void>::type
-            RtypeScatter (const Matrix<T, numPorts> S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
+        inline typename std::enable_if<! std::is_floating_point<T>::value, void>::type
+            RtypeScatter (const Matrix<T, numPorts>& S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
         {
             for (int c = 0; c < numPorts; ++c)
             {

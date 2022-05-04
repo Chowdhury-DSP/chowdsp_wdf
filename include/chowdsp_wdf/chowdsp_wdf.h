@@ -1,5 +1,10 @@
 #pragma once
 
+#if defined(_MSC_VER)
+#pragma warning (push)
+#pragma warning (disable: 4244)
+#endif
+
 // define NODISCARD if we can
 #if __cplusplus >= 201703L
 #define CHOWDSP_WDF_MAYBE_UNUSED [[maybe_unused]]
@@ -9,7 +14,7 @@
 
 // Define a default SIMD alignment
 #if defined(XSIMD_HPP)
-constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = xsimd::default_arch::alignment();
+constexpr auto WDF_DEFAULT_SIMD_ALIGNMENT = (int)xsimd::default_arch::alignment();
 #else
 constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = 16;
 #endif
@@ -17,3 +22,7 @@ constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = 16;
 #include "wdft/wdft.h"
 #include "wdf/wdf.h"
 #include "rtype/rtype.h"
+
+#if defined(_MSVC_VER)
+#pragma warning (pop)
+#endif
