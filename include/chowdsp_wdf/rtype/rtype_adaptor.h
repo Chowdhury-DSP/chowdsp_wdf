@@ -99,8 +99,8 @@ namespace wdft
         std::tuple<PortTypes&...> downPorts; // tuple of ports connected to RtypeAdaptor
 
         rtype_detail::Matrix<T, numPorts> S_matrix; // square matrix representing S
-        T a_vec alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of inputs to Rport
-        T b_vec alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of outputs from Rport
+        T a_vec alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of inputs to Rport
+        T b_vec alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of outputs from Rport
     };
 } // namespace wdft
 } // namespace chowdsp
