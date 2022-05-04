@@ -133,7 +133,6 @@ TEST_CASE ("SIMD Circuits Test")
             }
         }
 
-
         for (int i = 0; i < num; ++i)
             REQUIRE (xsimd::all ((data2[i] < data1[i] + 1.0e-6 && data2[i] > data1[i] - 1.0e-6)));
     }
@@ -241,7 +240,6 @@ TEST_CASE ("SIMD Circuits Test")
             for (int i = 0; i < num; ++i)
                 data2[i] = tonestack.processSample (data2[i]);
         }
-
 
         for (int i = 0; i < num; ++i)
             REQUIRE (xsimd::all ((data2[i] < data1[i] + 1.0e-6 && data2[i] > data1[i] - 1.0e-6)));

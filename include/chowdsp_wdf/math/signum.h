@@ -5,7 +5,6 @@ namespace chowdsp
 /** Methods for implementing the signum function */
 namespace signum
 {
-
     /** Signum function to determine the sign of the input. */
     template <typename T>
     inline int signum (T val)
