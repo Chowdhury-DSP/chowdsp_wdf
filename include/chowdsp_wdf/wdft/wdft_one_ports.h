@@ -385,7 +385,7 @@ namespace wdft
         T b_coef;
         T a_coef;
     };
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDFT_ONE_PORTS_H

@@ -76,7 +76,7 @@ namespace wdft
     {
         return (wdf.wdf.a - wdf.wdf.b) * ((T) 0.5 * wdf.wdf.G);
     }
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif // CHOWDSP_WDF_WDFT_BASE_H

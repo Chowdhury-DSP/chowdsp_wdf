@@ -221,25 +221,25 @@ namespace wdft
 
     /** Factory method for creating a parallel adaptor between two elements. */
     template <typename T, typename P1Type, typename P2Type>
-    [[maybe_unused]] WDFParallelT<T, P1Type, P2Type> makeParallel (P1Type& p1, P2Type& p2)
+    CHOWDSP_WDF_MAYBE_UNUSED WDFParallelT<T, P1Type, P2Type> makeParallel (P1Type& p1, P2Type& p2)
     {
         return WDFParallelT<T, P1Type, P2Type> (p1, p2);
     }
 
     /** Factory method for creating a series adaptor between two elements. */
     template <typename T, typename P1Type, typename P2Type>
-    [[maybe_unused]] WDFSeriesT<T, P1Type, P2Type> makeSeries (P1Type& p1, P2Type& p2)
+    CHOWDSP_WDF_MAYBE_UNUSED WDFSeriesT<T, P1Type, P2Type> makeSeries (P1Type& p1, P2Type& p2)
     {
         return WDFSeriesT<T, P1Type, P2Type> (p1, p2);
     }
 
     /** Factory method for creating a polarity inverter. */
     template <typename T, typename PType>
-    [[maybe_unused]] PolarityInverterT<T, PType> makeInverter (PType& p1)
+    CHOWDSP_WDF_MAYBE_UNUSED PolarityInverterT<T, PType> makeInverter (PType& p1)
     {
         return PolarityInverterT<T, PType> (p1);
     }
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDFT_ADAPTORS_H

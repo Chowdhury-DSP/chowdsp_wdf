@@ -102,7 +102,7 @@ namespace wdft
         T a_vec alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of inputs to Rport
         T b_vec alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of outputs from Rport
     };
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_RTYPE_ADAPTOR_H
