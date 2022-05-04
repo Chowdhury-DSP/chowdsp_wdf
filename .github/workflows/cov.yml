@@ -13,7 +13,7 @@ on:
 
 jobs:
   build_and_test:
-    name: Analyze test coverage ${{ matrix.os }}
+    name: Analyze test coverage ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
@@ -43,7 +43,7 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.cmake_args }}
         shell: bash
-        run: cmake -Bbuild -DCODE_COVERAGE=ON $CMAKE_ARGS
+        run: cmake -Bbuild -DCHOWDSP_WDF_CODE_COVERAGE=ON $CMAKE_ARGS
 
       - name: Build
         shell: bash

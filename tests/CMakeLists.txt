@@ -30,6 +30,20 @@ if(CHOWDSP_WDF_TEST_WITH_XSIMD)
     target_compile_definitions(chowdsp_wdf_tests PRIVATE CHOWDSP_WDF_TEST_WITH_XSIMD=1)
 endif()
 
+option(CHOWDSP_WDF_CODE_COVERAGE "Build tests with code coverage flags" OFF)
+if(CHOWDSP_WDF_CODE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        # Add required flags (GCC & LLVM/Clang)
+        message(STATUS "chowdsp_wdf_tests -- Appending code coverage compiler flags: -O0 -g --coverage")
+        target_compile_options(chowdsp_wdf_tests PUBLIC
+            -O0        # no optimization
+            -g         # generate debug info
+            --coverage # sets all required flags
+        )
+        target_link_options(chowdsp_wdf_tests PUBLIC --coverage)
+    endif()
+endif()
+
 option(CHOWDSP_WDF_RUN_CLANG_TIDY "Run clang-tidy on chowdsp WDF library" OFF)
 if(CHOWDSP_WDF_RUN_CLANG_TIDY)
     message(STATUS "Configuring clang-tidy target")
