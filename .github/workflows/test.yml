@@ -1,0 +1,63 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Run tests on ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: "Linux"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
+          - os: ubuntu-latest
+            name: "Linux (XSIMD)"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+          - os: windows-2019
+            name: "Windows"
+            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
+          - os: windows-2019
+            name: "Windows (XSIMD)"
+            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+          - os: macos-latest
+            name: "Mac x86_64"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
+          - os: macos-latest
+            name: "Mac x86_64 (XSIMD)"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+          - os: macos-latest
+            name: "Mac ARM (XSIMD)"
+            cmake_args: "-GXcode -DCMAKE_OSX_ARCHITECTURES=arm64 -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+
+    steps:
+      - name: Get latest CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure
+        env:
+          CMAKE_ARGS: ${{ matrix.cmake_args }}
+        shell: bash
+        run: cmake -Bbuild $CMAKE_ARGS
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Test
+        if: contains("${{ matrix.name }}", "ARM") == false # can't run tests on ARM (for now)
+        shell: bash
+        run: ./build/test-binary/chowdsp_wdf_tests
