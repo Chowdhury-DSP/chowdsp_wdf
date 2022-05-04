@@ -30,3 +30,14 @@ if(CHOWDSP_WDF_TEST_WITH_XSIMD)
     target_link_libraries(chowdsp_wdf_tests PRIVATE ${PROJECT_NAME} xsimd)
     target_compile_definitions(chowdsp_wdf_tests PRIVATE CHOWDSP_WDF_TEST_WITH_XSIMD=1)
 endif()
+
+option(CHOWDSP_WDF_RUN_CLANG_TIDY "Run clang-tidy on chowdsp WDF library" OFF)
+if(CHOWDSP_WDF_RUN_CLANG_TIDY)
+    message(STATUS "Configuring clang-tidy target")
+    add_custom_target(chowdsp_wdf_clang_tidy
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMAND rm -f chowdsp_wdf_clang_tidy.cpp
+        COMMAND ${CMAKE_COMMAND} -E echo "\\#include \\\"include/chowdsp_wdf/chowdsp_wdf.h\\\"" > chowdsp_wdf_clang_tidy.cpp
+        COMMAND clang-tidy -p build "chowdsp_wdf_clang_tidy.cpp"
+    )
+endif()
