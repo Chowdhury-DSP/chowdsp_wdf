@@ -83,8 +83,12 @@ private:
         template <typename RType>
         static float calcImpedance (RType& R)
         {
-            float Ra, Rb, Rc, Rd, Re;
-            std::tie (Ra, Rb, Rc, Rd, Re) = R.getPortImpedances();
+            const auto&& impedances = R.getPortImpedances();
+            const auto Ra = impedances[0];
+            const auto Rb = impedances[1];
+            const auto Rc = impedances[2];
+            const auto Rd = impedances[3];
+            const auto Re = impedances[4];
 
             // This scattering matrix was derived using the R-Solver python script (https://github.com/jatinchowdhury18/R-Solver),
             // invoked with command: r_solver.py --datum 0 --adapt 5 --out scratch/baxandall_scatt.txt netlists/baxandall.txt

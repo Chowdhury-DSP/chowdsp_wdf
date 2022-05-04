@@ -132,7 +132,7 @@ namespace wdf
             this->internalWDF.calcImpedance();
         }
     };
-}
-}
+} // namespace wdf
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDF_BASE_H

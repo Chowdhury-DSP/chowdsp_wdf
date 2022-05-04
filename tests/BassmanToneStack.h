@@ -69,8 +69,13 @@ private:
         template <typename RType>
         static void calcImpedance (RType& R)
         {
-            float Ra, Rb, Rc, Rd, Re, Rf;
-            std::tie (Ra, Rb, Rc, Rd, Re, Rf) = R.getPortImpedances();
+            const auto&& impedances = R.getPortImpedances();
+            const auto Ra = impedances[0];
+            const auto Rb = impedances[1];
+            const auto Rc = impedances[2];
+            const auto Rd = impedances[3];
+            const auto Re = impedances[4];
+            const auto Rf = impedances[5];
             const auto Ga = 1.0 / Ra;
             const auto Gb = 1.0 / Rb;
             const auto Gc = 1.0 / Rc;

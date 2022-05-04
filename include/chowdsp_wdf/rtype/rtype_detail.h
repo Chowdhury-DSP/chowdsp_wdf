@@ -16,10 +16,8 @@ constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = 16;
 
 namespace chowdsp
 {
-
 namespace wdft
 {
-
 #ifndef DOXYGEN
     /** Utility functions used internally by the R-Type adaptor */
     namespace rtype_detail

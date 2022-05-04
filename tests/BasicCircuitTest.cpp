@@ -3,9 +3,9 @@
 
 using namespace chowdsp::wdf;
 
-TEST_CASE("Basic Circuits Test")
+TEST_CASE ("Basic Circuits Test")
 {
-    SECTION("Voltage Divider")
+    SECTION ("Voltage Divider")
     {
         Resistor<float> r1 (10000.0f);
         Resistor<float> r2 (10000.0f);
@@ -22,7 +22,7 @@ TEST_CASE("Basic Circuits Test")
         REQUIRE (vOut == 5.0f);
     }
 
-    SECTION("Current Divider Test")
+    SECTION ("Current Divider Test")
     {
         Resistor<float> r1 (10000.0f);
         Resistor<float> r2 (10000.0f);
@@ -38,7 +38,7 @@ TEST_CASE("Basic Circuits Test")
         REQUIRE (iOut == 0.5f);
     }
 
-    SECTION("Shockley Diode")
+    SECTION ("Shockley Diode")
     {
         constexpr auto saturationCurrent = 1.0e-7;
         constexpr auto thermalVoltage = 25.85e-3;
@@ -53,10 +53,10 @@ TEST_CASE("Basic Circuits Test")
         I1.incident (D1.reflected());
 
         auto expectedCurrent = saturationCurrent * (std::exp (-voltage / thermalVoltage) - 1.0);
-        REQUIRE(D1.current() == Approx (expectedCurrent).margin(1.0e-3));
+        REQUIRE (D1.current() == Approx (expectedCurrent).margin (1.0e-3));
     }
 
-    SECTION("Current Switch")
+    SECTION ("Current Switch")
     {
         Resistor<float> r1 (10000.0f);
         ResistiveCurrentSource<float> Is;
@@ -82,7 +82,7 @@ TEST_CASE("Basic Circuits Test")
         REQUIRE (currentOpen == 0.0f);
     }
 
-    SECTION("Y-Parameter Test")
+    SECTION ("Y-Parameter Test")
     {
         constexpr auto y11 = 0.11;
         constexpr auto y12 = 0.22;
@@ -102,7 +102,7 @@ TEST_CASE("Basic Circuits Test")
         REQUIRE (yParam.current() == Approx (y21 * res.voltage() + y22 * voltage).margin (1.0e-3));
     }
 
-    SECTION("RC Lowpass")
+    SECTION ("RC Lowpass")
     {
         constexpr double fs = 44100.0;
         constexpr double fc = 500.0;
@@ -117,8 +117,7 @@ TEST_CASE("Basic Circuits Test")
         PolarityInverter<double> p1 (&s1);
         IdealVoltageSource<double> vs { &p1 };
 
-        auto testFreq = [&](double freq, double expectedMagDB)
-        {
+        auto testFreq = [&] (double freq, double expectedMagDB) {
             c1.reset();
 
             double magnitude = 0.0;
@@ -145,7 +144,7 @@ TEST_CASE("Basic Circuits Test")
         testFreq (0.5 * fc, -1.0);
     }
 
-    SECTION("Alpha Transform")
+    SECTION ("Alpha Transform")
     {
         constexpr float fs = 44100.0f;
 
@@ -154,8 +153,7 @@ TEST_CASE("Basic Circuits Test")
         constexpr float C = 1.0e-6f;
         constexpr float L = 0.022f;
 
-        auto testFreq = [&](float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1)
-        {
+        auto testFreq = [&] (float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1) {
             float magnitude = 0.0f;
             for (int n = 0; n < (int) fs; ++n)
             {
@@ -224,7 +222,7 @@ TEST_CASE("Basic Circuits Test")
         }
     }
 
-    SECTION("Impedance Change")
+    SECTION ("Impedance Change")
     {
         constexpr float fs = 44100.0f;
 
