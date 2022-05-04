@@ -58,6 +58,6 @@ jobs:
         run: cmake --build build --config Release --parallel 4
 
       - name: Test
-        if: contains("${{ matrix.name }}", "ARM") == false # can't run tests on ARM (for now)
+        if: matrix.name != 'Mac ARM (XSIMD)' # can't run tests on ARM (for now)
         shell: bash
         run: ./build/test-binary/chowdsp_wdf_tests

@@ -97,7 +97,7 @@ namespace wdft
         T R_value = (T) 1.0e-9;
     };
 
-    /** WDF Current source (non-adpatable) */
+    /** WDF Current source (non-adaptable) */
     template <typename T, typename Next>
     class IdealCurrentSourceT final : public RootWDF
     {
