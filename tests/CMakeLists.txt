@@ -1,5 +1,6 @@
 add_executable(chowdsp_wdf_tests)
 target_include_directories(chowdsp_wdf_tests PRIVATE .)
+target_link_libraries(chowdsp_wdf_tests PRIVATE ${PROJECT_NAME} chowdsp_wdf)
 target_sources(chowdsp_wdf_tests
     PRIVATE
         BasicCircuitTest.cpp
