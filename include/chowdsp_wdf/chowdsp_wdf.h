@@ -2,7 +2,7 @@
 
 #if defined(_MSC_VER)
 #pragma warning(push)
-#pragma warning(disable : 4244 4464 4514 C4324)
+#pragma warning(disable : 4244 4464 4514 4324)
 #endif
 
 // define NODISCARD if we can
