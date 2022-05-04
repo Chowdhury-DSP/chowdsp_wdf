@@ -11,6 +11,8 @@ namespace wdft
     class BaseWDF
     {
     public:
+        virtual ~BaseWDF() = default;
+
         void connectToParent (BaseWDF* p) { parent = p; }
 
         virtual void calcImpedance() = 0;

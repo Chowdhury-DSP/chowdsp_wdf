@@ -2,7 +2,7 @@
 
 #if defined(_MSC_VER)
 #pragma warning (push)
-#pragma warning (disable: 4244)
+#pragma warning (disable: 4244 4464 4514)
 #endif
 
 // define NODISCARD if we can
@@ -23,6 +23,6 @@ constexpr int WDF_DEFAULT_SIMD_ALIGNMENT = 16;
 #include "wdf/wdf.h"
 #include "rtype/rtype.h"
 
-#if defined(_MSVC_VER)
+#if defined(_MSC_VER)
 #pragma warning (pop)
 #endif
