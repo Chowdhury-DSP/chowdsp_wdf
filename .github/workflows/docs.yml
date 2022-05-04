@@ -4,9 +4,6 @@ on:
   push:
     branches:
     - main
-  pull_request:
-    branches:
-      - main
 
   workflow_dispatch:
 
@@ -29,7 +26,7 @@ jobs:
       run: make
 
     - name: Deploy docs
-#      if: ${{ github.event_name != 'pull_request' }}
+      if: ${{ github.ezvent_name != 'pull_request' }}
       uses: garygrossgarten/github-action-scp@release
       with:
         local: docs

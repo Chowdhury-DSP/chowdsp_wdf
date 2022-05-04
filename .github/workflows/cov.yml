@@ -66,3 +66,5 @@ jobs:
       - name: Upload Coverage Data
         shell: bash
         run: bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
