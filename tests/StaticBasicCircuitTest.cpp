@@ -117,8 +117,7 @@ TEST_CASE ("Static Basic Circuits Test")
         auto p1 = makeInverter<double> (s1);
         IdealVoltageSourceT<double, decltype (p1)> vs { p1 };
 
-        auto testFreq = [&] (double freq, double expectedMagDB)
-        {
+        auto testFreq = [&] (double freq, double expectedMagDB) {
             c1.reset();
 
             double magnitude = 0.0;
@@ -154,8 +153,7 @@ TEST_CASE ("Static Basic Circuits Test")
         constexpr float C = 1.0e-6f;
         constexpr float L = 0.022f;
 
-        auto testFreq = [&] (float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1)
-        {
+        auto testFreq = [&] (float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1) {
             float magnitude = 0.0f;
             for (int n = 0; n < (int) fs; ++n)
             {
@@ -230,8 +228,8 @@ struct ImpedanceChecker
 {
     float value1 = 0.0f;
     float value2 = 0.0f;
-    std::function<void(WDFType&, float)> changeFunc;
-    std::function<float(float)> impedanceCalc;
+    std::function<void (WDFType&, float)> changeFunc;
+    std::function<float (float)> impedanceCalc;
     std::function<WDFType()> factory;
 };
 
@@ -277,63 +275,66 @@ TEST_CASE ("Static Impedance Change Test")
         constexpr float fs = 44100.0f;
 
         // resistor
-        doImpedanceChecks (ImpedanceChecker<ResistorT<float>>{
-            1000.0f, 2000.0f,
+        doImpedanceChecks (ImpedanceChecker<ResistorT<float>> {
+            1000.0f,
+            2000.0f,
             [] (auto& r, float value) { r.setResistanceValue (value); },
             [] (float value) { return value; },
-            [] () { return ResistorT<float> { 1000.0f }; },
+            []() { return ResistorT<float> { 1000.0f }; },
         });
 
         // capacitor
-        doImpedanceChecks (ImpedanceChecker<CapacitorT<float>>{
-            1.0e-6f, 2.0e-6f,
+        doImpedanceChecks (ImpedanceChecker<CapacitorT<float>> {
+            1.0e-6f,
+            2.0e-6f,
             [] (auto& c, float value) { c.setCapacitanceValue (value); },
-            [_fs=fs] (float value) { return 1.0f / (2.0f * value * (float) _fs); },
-            [_fs=fs] ()
-            { return CapacitorT<float> { 1.0e-6f, _fs }; },
+            [_fs = fs] (float value) { return 1.0f / (2.0f * value * (float) _fs); },
+            [_fs = fs]() { return CapacitorT<float> { 1.0e-6f, _fs }; },
         });
 
         // capacitor alpha
-        doImpedanceChecks (ImpedanceChecker<CapacitorAlphaT<float>>{
-            1.0e-6f, 2.0e-6f,
+        doImpedanceChecks (ImpedanceChecker<CapacitorAlphaT<float>> {
+            1.0e-6f,
+            2.0e-6f,
             [] (auto& c, float value) { c.setCapacitanceValue (value); },
-            [_fs=fs] (float value) { return 1.0f / (1.5f * value * (float) _fs); },
-            [_fs=fs] ()
-            { return CapacitorAlphaT<float> { 1.0e-6f, _fs, 0.5f }; },
+            [_fs = fs] (float value) { return 1.0f / (1.5f * value * (float) _fs); },
+            [_fs = fs]() { return CapacitorAlphaT<float> { 1.0e-6f, _fs, 0.5f }; },
         });
 
         // inductor
-        doImpedanceChecks (ImpedanceChecker<InductorT<float>>{
-            1.0f, 2.0f,
+        doImpedanceChecks (ImpedanceChecker<InductorT<float>> {
+            1.0f,
+            2.0f,
             [] (auto& i, float value) { i.setInductanceValue (value); },
-            [_fs=fs] (float value) { return 2.0f * value * (float) _fs; },
-            [_fs=fs] ()
-            { return InductorT<float> { 1.0f, _fs }; },
+            [_fs = fs] (float value) { return 2.0f * value * (float) _fs; },
+            [_fs = fs]() { return InductorT<float> { 1.0f, _fs }; },
         });
 
         // inductor alpha
-        doImpedanceChecks (ImpedanceChecker<InductorAlphaT<float>>{
-            1.0f, 2.0f,
+        doImpedanceChecks (ImpedanceChecker<InductorAlphaT<float>> {
+            1.0f,
+            2.0f,
             [] (auto& i, float value) { i.setInductanceValue (value); },
-            [_fs=fs] (float value) { return 1.5f * value * (float) _fs; },
-            [_fs=fs] ()
-            { return InductorAlphaT<float> { 1.0f, _fs, 0.5f }; },
+            [_fs = fs] (float value) { return 1.5f * value * (float) _fs; },
+            [_fs = fs]() { return InductorAlphaT<float> { 1.0f, _fs, 0.5f }; },
         });
 
         // resistive voltage source
-        doImpedanceChecks (ImpedanceChecker<ResistiveVoltageSourceT<float>>{
-            1000.0f, 2000.0f,
+        doImpedanceChecks (ImpedanceChecker<ResistiveVoltageSourceT<float>> {
+            1000.0f,
+            2000.0f,
             [] (auto& r, float value) { r.setResistanceValue (value); },
             [] (float value) { return value; },
-            [] () { return ResistiveVoltageSourceT<float> { 1000.0f }; },
+            []() { return ResistiveVoltageSourceT<float> { 1000.0f }; },
         });
 
         // resistive current source
-        doImpedanceChecks (ImpedanceChecker<ResistiveCurrentSourceT<float>>{
-            1000.0f, 2000.0f,
+        doImpedanceChecks (ImpedanceChecker<ResistiveCurrentSourceT<float>> {
+            1000.0f,
+            2000.0f,
             [] (auto& r, float value) { r.setResistanceValue (value); },
             [] (float value) { return value; },
-            [] () { return ResistiveCurrentSourceT<float> { 1000.0f }; },
+            []() { return ResistiveCurrentSourceT<float> { 1000.0f }; },
         });
     }
 }
