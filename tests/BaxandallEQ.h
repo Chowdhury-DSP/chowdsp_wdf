@@ -1,5 +1,9 @@
 #pragma once
 
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
+#include <xsimd/xsimd.hpp>
+#endif
+
 #include <chowdsp_wdf/chowdsp_wdf.h>
 
 using namespace chowdsp;
