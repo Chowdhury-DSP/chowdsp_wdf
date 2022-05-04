@@ -86,7 +86,7 @@ void checkWrightOmega (Func&& omega, T tol)
     }
 }
 
-TEST_CASE("Omega Test")
+TEST_CASE ("Omega Test")
 {
     SECTION ("Log2 Test")
     {
@@ -95,16 +95,14 @@ TEST_CASE("Omega Test")
             2.0f,
             [] (auto x) { return chowdsp::Omega::log2_approx<float> (x); },
             [] (auto x) { return std::log2 (x); },
-            0.008f
-        });
+            0.008f });
 
         checkFunctionAccuracy (FunctionTest<double> {
             1.0,
             2.0,
             [] (auto x) { return chowdsp::Omega::log2_approx<double> (x); },
             [] (auto x) { return std::log2 (x); },
-            0.008
-        });
+            0.008 });
     }
 
     SECTION ("Log Test")
@@ -114,16 +112,14 @@ TEST_CASE("Omega Test")
             12.0f,
             [] (auto x) { return chowdsp::Omega::log_approx<float> (x); },
             [] (auto x) { return std::log (x); },
-            0.005f
-        });
+            0.005f });
 
         checkFunctionAccuracy (FunctionTest<double> {
             8.0,
             12.0,
             [] (auto x) { return chowdsp::Omega::log_approx<double> (x); },
             [] (auto x) { return std::log (x); },
-            0.005
-        });
+            0.005 });
     }
 
     SECTION ("Pow2 Test")
@@ -133,16 +129,14 @@ TEST_CASE("Omega Test")
             1.0f,
             [] (auto x) { return chowdsp::Omega::pow2_approx<float> (x); },
             [] (auto x) { return std::pow (2.0f, x); },
-            0.001f
-        });
+            0.001f });
 
         checkFunctionAccuracy (FunctionTest<double> {
             0.0,
             1.0,
             [] (auto x) { return chowdsp::Omega::pow2_approx<double> (x); },
             [] (auto x) { return std::pow (2.0, x); },
-            0.001
-        });
+            0.001 });
     }
 
     SECTION ("Exp Test")
@@ -152,16 +146,14 @@ TEST_CASE("Omega Test")
             2.0f,
             [] (auto x) { return chowdsp::Omega::exp_approx<float> (x); },
             [] (auto x) { return std::exp (x); },
-            0.005f
-        });
+            0.005f });
 
         checkFunctionAccuracy (FunctionTest<double> {
             -4.0,
             2.0,
             [] (auto x) { return chowdsp::Omega::exp_approx<double> (x); },
             [] (auto x) { return std::exp (x); },
-            0.005
-        });
+            0.005 });
     }
 
     SECTION ("Omega1 Test")

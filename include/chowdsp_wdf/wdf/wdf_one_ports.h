@@ -18,7 +18,7 @@ namespace wdf
         explicit Resistor (T value) : WDFWrapper<T, wdft::ResistorT<T>> ("Resistor", value)
         {
         }
-        
+
         /** Sets the resistance value of the WDF resistor, in Ohms. */
         void setResistanceValue (T newR)
         {
@@ -180,7 +180,7 @@ namespace wdf
             this->propagateImpedance();
         }
     };
-}
-}
+} // namespace wdf
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDF_ONE_PORTS_H

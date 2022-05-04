@@ -29,7 +29,6 @@
 
 namespace chowdsp
 {
-
 /**
  * Useful approximations for evaluating the Wright Omega function.
  *
@@ -58,7 +57,7 @@ namespace Omega
 
     /** approximation for log(x) (32-bit) */
     template <>
-    [[maybe_unused]] inline float log_approx (float x)
+    CHOWDSP_WDF_MAYBE_UNUSED inline float log_approx (float x)
     {
         union
         {
@@ -75,7 +74,7 @@ namespace Omega
 
     /** approximation for log(x) (64-bit) */
     template <>
-    [[maybe_unused]] inline double log_approx (double x)
+    CHOWDSP_WDF_MAYBE_UNUSED inline double log_approx (double x)
     {
         union
         {
@@ -108,7 +107,7 @@ namespace Omega
 
     /** approximation for exp(x) (32-bit) */
     template <>
-    [[maybe_unused]] inline float exp_approx (float x)
+    CHOWDSP_WDF_MAYBE_UNUSED inline float exp_approx (float x)
     {
         x = std::max (-126.0f, 1.442695040888963f * x);
 
@@ -128,7 +127,7 @@ namespace Omega
 
     /** approximation for exp(x) (64-bit) */
     template <>
-    [[maybe_unused]] inline double exp_approx (double x)
+    CHOWDSP_WDF_MAYBE_UNUSED inline double exp_approx (double x)
     {
         x = std::max (-126.0, 1.442695040888963 * x);
 

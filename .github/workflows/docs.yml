@@ -1,0 +1,36 @@
+name: Docs
+
+on:
+  push:
+    branches:
+    - main
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Make and deploy docs
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Install Linux Deps
+      run: |
+        sudo apt-get update
+        sudo apt install doxygen graphviz
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Make Docs
+      working-directory: doxygen
+      run: make
+
+    - name: Deploy docs
+      if: ${{ github.ezvent_name != 'pull_request' }}
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        local: docs
+        remote: Library/Web/chowdsp/chowdsp_wdf
+        host: ccrma-gate.stanford.edu
+        username: jatin
+        password: ${{ secrets.CCRMA_PASS }}

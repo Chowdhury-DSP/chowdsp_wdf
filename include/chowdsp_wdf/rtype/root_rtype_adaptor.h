@@ -33,8 +33,7 @@ namespace wdft
                 a_vec[i] = (T) 0;
             }
 
-            rtype_detail::forEachInTuple ([&] (auto& port, size_t)
-                                          { port.connectToParent (this); },
+            rtype_detail::forEachInTuple ([&] (auto& port, size_t) { port.connectToParent (this); },
                                           downPorts);
         }
 
@@ -47,8 +46,7 @@ namespace wdft
         constexpr auto getPortImpedances()
         {
             std::array<T, numPorts> portImpedances {};
-            rtype_detail::forEachInTuple ([&] (auto& port, size_t i)
-                                          { portImpedances[i] = port.wdf.R; },
+            rtype_detail::forEachInTuple ([&] (auto& port, size_t i) { portImpedances[i] = port.wdf.R; },
                                           downPorts);
 
             return portImpedances;
@@ -66,8 +64,7 @@ namespace wdft
         inline void compute() noexcept
         {
             rtype_detail::RtypeScatter (S_matrix, a_vec, b_vec);
-            rtype_detail::forEachInTuple ([&] (auto& port, size_t i)
-                                          {
+            rtype_detail::forEachInTuple ([&] (auto& port, size_t i) {
                                           port.incident (b_vec[i]);
                                           a_vec[i] = port.reflected(); },
                                           downPorts);
@@ -80,7 +77,7 @@ namespace wdft
         T a_vec alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of inputs to Rport
         T b_vec alignas (WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of outputs from Rport
     };
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_ROOT_RTYPE_ADAPTOR_H

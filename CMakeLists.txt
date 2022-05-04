@@ -5,7 +5,7 @@ include(cmake/CXXStandard.cmake)
 include(cmake/CPM.cmake)
 
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_SOURCE_DIR}/include)
 
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME}
@@ -24,7 +24,6 @@ endif ()
 
 # if we are the top-level project, then configure the project tests
 option(CHOWDSP_WDF_BUILD_TESTS "Add targets for building and running chowdsp_wdf tests" ${is_toplevel})
-
 if (CHOWDSP_WDF_BUILD_TESTS)
     add_subdirectory(tests)
 endif()

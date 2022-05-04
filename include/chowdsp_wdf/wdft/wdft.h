@@ -3,11 +3,12 @@
 
 namespace chowdsp
 {
-
 /** API for constructing Wave Digital Filters with a fixed compile-time architecture */
-namespace wdft {}
-
+namespace wdft
+{
 }
+
+} // namespace chowdsp
 
 #include "wdft_one_ports.h"
 #include "wdft_sources.h"

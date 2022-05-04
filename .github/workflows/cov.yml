@@ -1,0 +1,70 @@
+name: Coverage
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Analyze test coverage ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: "Linux"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Debug -DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
+          - os: ubuntu-latest
+            name: "Linux (XSIMD)"
+            cmake_args: "-DCMAKE_BUILD_TYPE=Debug -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+
+    steps:
+      - name: Install Linux Deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt install lcov
+
+      - name: Get latest CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure
+        env:
+          CMAKE_ARGS: ${{ matrix.cmake_args }}
+        shell: bash
+        run: cmake -Bbuild -DCHOWDSP_WDF_CODE_COVERAGE=ON $CMAKE_ARGS
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --parallel 4
+
+      - name: Test
+        shell: bash
+        run: ./build/test-binary/chowdsp_wdf_tests
+
+      - name: Collect Coverage Data
+        shell: bash
+        run: |
+          lcov --directory . --capture --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '/Applications/Xcode*' '*tests*' --output-file coverage.info
+
+      - name: Report Coverage Data
+        shell: bash
+        run: lcov --list coverage.info
+
+      - name: Upload Coverage Data
+        shell: bash
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
