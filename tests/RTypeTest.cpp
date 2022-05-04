@@ -7,7 +7,7 @@ constexpr double fs = 48000.0f;
 
 void bassmanFreqTest (float lowPot, float highPot, float sineFreq, float expGainDB, float maxErr)
 {
-    Tonestack tonestack;
+    Tonestack<double> tonestack;
     tonestack.prepare (fs);
     tonestack.setParams ((double) highPot, (double) lowPot, 1.0);
 

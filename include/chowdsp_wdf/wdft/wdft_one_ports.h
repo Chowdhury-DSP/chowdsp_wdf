@@ -23,7 +23,7 @@ namespace wdft
         /** Sets the resistance value of the WDF resistor, in Ohms. */
         void setResistanceValue (T newR)
         {
-            if (newR == R_value)
+            if (all (newR == R_value))
                 return;
 
             R_value = newR;
@@ -89,7 +89,7 @@ namespace wdft
         /** Sets the capacitance value of the WDF capacitor, in Farads. */
         void setCapacitanceValue (T newC)
         {
-            if (newC == C_value)
+            if (all (newC == C_value))
                 return;
 
             C_value = newC;
@@ -178,7 +178,7 @@ namespace wdft
         /** Sets the capacitance value of the WDF capacitor, in Farads. */
         void setCapacitanceValue (T newC)
         {
-            if (newC == C_value)
+            if (all (newC == C_value))
                 return;
 
             C_value = newC;
@@ -256,7 +256,7 @@ namespace wdft
         /** Sets the inductance value of the WDF inductor, in Henries. */
         void setInductanceValue (T newL)
         {
-            if (newL == L_value)
+            if (all (newL == L_value))
                 return;
 
             L_value = newL;
@@ -343,7 +343,7 @@ namespace wdft
         /** Sets the inductance value of the WDF inductor, in Henries. */
         void setInductanceValue (T newL)
         {
-            if (newL == L_value)
+            if (all (newL == L_value))
                 return;
 
             L_value = newL;

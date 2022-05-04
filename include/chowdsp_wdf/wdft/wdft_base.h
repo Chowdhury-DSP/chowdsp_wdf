@@ -7,10 +7,6 @@ namespace chowdsp
 {
 namespace wdft
 {
-#if WDF_USING_JUCE
-    using namespace SIMDUtils;
-#endif // WDF_USING_JUCE
-
     /** Base WDF class for propagating impedance changes between elements */
     class BaseWDF
     {
@@ -43,12 +39,28 @@ namespace wdft
     };
 
 #ifndef DOXYGEN
+    /** Useful structs for determining the internal data type of SIMD types */
+    namespace SampleTypeHelpers
+    {
+        template <typename T, bool = std::is_floating_point<T>::value>
+        struct ElementType
+        {
+            using Type = T;
+        };
+
+        template <typename T>
+        struct ElementType<T, false>
+        {
+            using Type = typename T::value_type;
+        };
+    } // namespace SampleTypeHelpers
+
     /** Helper struct for common WDF member variables */
     template <typename T>
     struct WDFMembers
     {
-#if WDF_USING_JUCE
-        using NumericType = typename juce::dsp::SampleTypeHelpers::ElementType<T>::Type;
+#if defined(XSIMD_HPP)
+        using NumericType = typename SampleTypeHelpers::ElementType<T>::Type;
 #else
         using NumericType = T;
 #endif
@@ -61,6 +73,21 @@ namespace wdft
     /** Type alias for a SIMD numeric type */
     template <typename T>
     using NumericType = typename WDFMembers<T>::NumericType;
+
+    /** Returns true if all the elements in a SIMD vector are equal */
+    inline bool all (bool x)
+    {
+        return x;
+    }
+
+#if defined(XSIMD_HPP)
+    /** Returns true if all the elements in a SIMD vector are equal */
+    template <typename T>
+    inline bool all (xsimd::batch_bool<T> x)
+    {
+        return xsimd::all (x);
+    }
+#endif
 #endif // DOXYGEN
 
     /** Probe the voltage across this circuit element. */

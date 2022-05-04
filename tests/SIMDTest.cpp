@@ -2,7 +2,7 @@
 
 #include <catch2/catch2.hpp>
 #include <xsimd/xsimd.hpp>
-#include <chowdsp_wdf/chowdsp_wdf.h>
+#include "BassmanToneStack.h"
 
 TEST_CASE ("SIMD Circuits Test")
 {
@@ -201,6 +201,45 @@ TEST_CASE ("SIMD Circuits Test")
                 P2.incident (d53.reflected());
             }
         }
+
+        for (int i = 0; i < num; ++i)
+            REQUIRE (xsimd::all ((data2[i] < data1[i] + 1.0e-6 && data2[i] > data1[i] - 1.0e-6)));
+    }
+
+    SECTION ("SIMD R-Type Test")
+    {
+        constexpr double fs = 44100.0;
+
+        using FloatType = double;
+        using VType = xsimd::batch<FloatType>;
+
+        constexpr int num = 5;
+        FloatType data1[num] = { 1.0, 0.5, 0.0, -0.5, -1.0 };
+        VType data2[num] = { 1.0, 0.5, 0.0, -0.5, -1.0 };
+
+        constexpr double highPot = 0.75;
+        constexpr double lowPot = 0.25;
+
+        // Normal
+        {
+            Tonestack<FloatType> tonestack;
+            tonestack.prepare (fs);
+            tonestack.setParams ((FloatType) highPot, (FloatType) lowPot, 1.0);
+
+            for (int i = 0; i < num; ++i)
+                data1[i] = tonestack.processSample (data1[i]);
+        }
+
+        // SIMD
+        {
+            Tonestack<VType> tonestack;
+            tonestack.prepare (fs);
+            tonestack.setParams ((VType) highPot, (VType) lowPot, (VType) 1.0);
+
+            for (int i = 0; i < num; ++i)
+                data2[i] = tonestack.processSample (data2[i]);
+        }
+
 
         for (int i = 0; i < num; ++i)
             REQUIRE (xsimd::all ((data2[i] < data1[i] + 1.0e-6 && data2[i] > data1[i] - 1.0e-6)));

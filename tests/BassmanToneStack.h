@@ -9,6 +9,7 @@
 using namespace chowdsp;
 
 /** Fender Bassman tonestack circuit */
+template <typename FloatType>
 class Tonestack
 {
 public:
@@ -16,53 +17,53 @@ public:
 
     void prepare (double sampleRate)
     {
-        Cap1.prepare (sampleRate);
-        Cap2.prepare (sampleRate);
-        Cap3.prepare (sampleRate);
+        Cap1.prepare ((FloatType) sampleRate);
+        Cap2.prepare ((FloatType) sampleRate);
+        Cap3.prepare ((FloatType) sampleRate);
     }
 
-    double processSample (double inSamp)
+    FloatType processSample (FloatType inSamp)
     {
         Vres.setVoltage (inSamp);
         R.compute();
 
-        return wdft::voltage<double> (Res1m) + wdft::voltage<double> (S2) + wdft::voltage<double> (Res3m);
+        return wdft::voltage<FloatType> (Res1m) + wdft::voltage<FloatType> (S2) + wdft::voltage<FloatType> (Res3m);
     }
 
-    void setParams (double highPot, double lowPot, double midPot)
+    void setParams (FloatType highPot, FloatType lowPot, FloatType midPot)
     {
         Res1m.setResistanceValue (highPot * R1);
-        Res1p.setResistanceValue ((1.0 - highPot) * R1);
+        Res1p.setResistanceValue (((FloatType) 1 - highPot) * R1);
 
-        Res2.setResistanceValue ((1.0 - lowPot) * R2);
+        Res2.setResistanceValue (((FloatType) 1 - lowPot) * R2);
 
         Res3m.setResistanceValue (midPot * R3);
-        Res3p.setResistanceValue ((1.0 - midPot) * R3);
+        Res3p.setResistanceValue (((FloatType) 1 - midPot) * R3);
     }
 
 private:
-    wdft::CapacitorAlphaT<double> Cap1 { 250e-12 };
-    wdft::CapacitorAlphaT<double> Cap2 { 20e-9 }; // Port D
-    wdft::CapacitorAlphaT<double> Cap3 { 20e-9 }; // Port F
+    wdft::CapacitorAlphaT<FloatType> Cap1 { 250e-12 };
+    wdft::CapacitorAlphaT<FloatType> Cap2 { 20e-9 }; // Port D
+    wdft::CapacitorAlphaT<FloatType> Cap3 { 20e-9 }; // Port F
 
-    wdft::ResistorT<double> Res1p { 1.0 };
-    wdft::ResistorT<double> Res1m { 1.0 };
-    wdft::ResistorT<double> Res2 { 1.0 };
-    wdft::ResistorT<double> Res3p { 1.0 };
-    wdft::ResistorT<double> Res3m { 1.0 };
-    wdft::ResistorT<double> Res4 { 56e3 }; // Port E
+    wdft::ResistorT<FloatType> Res1p { 1.0 };
+    wdft::ResistorT<FloatType> Res1m { 1.0 };
+    wdft::ResistorT<FloatType> Res2 { 1.0 };
+    wdft::ResistorT<FloatType> Res3p { 1.0 };
+    wdft::ResistorT<FloatType> Res3m { 1.0 };
+    wdft::ResistorT<FloatType> Res4 { 56e3 }; // Port E
 
-    wdft::ResistiveVoltageSourceT<double> Vres { 1.0 };
+    wdft::ResistiveVoltageSourceT<FloatType> Vres { 1.0 };
 
     // Port A
-    wdft::WDFSeriesT<double, decltype (Vres), decltype (Res3m)> S1 { Vres, Res3m };
+    wdft::WDFSeriesT<FloatType, decltype (Vres), decltype (Res3m)> S1 { Vres, Res3m };
 
     // Port B
-    wdft::WDFSeriesT<double, decltype (Res2), decltype (Res3p)> S3 { Res2, Res3p };
+    wdft::WDFSeriesT<FloatType, decltype (Res2), decltype (Res3p)> S3 { Res2, Res3p };
 
     // Port C
-    wdft::WDFSeriesT<double, decltype (Res1p), decltype (Res1m)> S4 { Res1p, Res1m };
-    wdft::WDFSeriesT<double, decltype (Cap1), decltype (S4)> S2 { Cap1, S4 };
+    wdft::WDFSeriesT<FloatType, decltype (Res1p), decltype (Res1m)> S4 { Res1p, Res1m };
+    wdft::WDFSeriesT<FloatType, decltype (Cap1), decltype (S4)> S2 { Cap1, S4 };
 
     static constexpr double R1 = 250e3;
     static constexpr double R2 = 1e6;
@@ -80,12 +81,12 @@ private:
             const auto Rd = impedances[3];
             const auto Re = impedances[4];
             const auto Rf = impedances[5];
-            const auto Ga = 1.0 / Ra;
-            const auto Gb = 1.0 / Rb;
-            const auto Gc = 1.0 / Rc;
-            const auto Gd = 1.0 / Rd;
-            const auto Ge = 1.0 / Re;
-            const auto Gf = 1.0 / Rf;
+            const auto Ga = (FloatType) 1 / Ra;
+            const auto Gb = (FloatType) 1 / Rb;
+            const auto Gc = (FloatType) 1 / Rc;
+            const auto Gd = (FloatType) 1 / Rd;
+            const auto Ge = (FloatType) 1 / Re;
+            const auto Gf = (FloatType) 1 / Rf;
 
             // This scattering matrix was derived using the R-Solver python script (https://github.com/jatinchowdhury18/R-Solver),
             // with netlist input: netlists/bassman.txt
@@ -98,6 +99,6 @@ private:
         }
     };
 
-    using RType = wdft::RootRtypeAdaptor<double, ImpedanceCalc, decltype (S1), decltype (S3), decltype (S2), decltype (Cap2), decltype (Res4), decltype (Cap3)>;
+    using RType = wdft::RootRtypeAdaptor<FloatType, ImpedanceCalc, decltype (S1), decltype (S3), decltype (S2), decltype (Cap2), decltype (Res4), decltype (Cap3)>;
     RType R { std::tie (S1, S3, S2, Cap2, Res4, Cap3) };
 };

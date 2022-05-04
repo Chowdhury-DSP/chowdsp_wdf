@@ -10,10 +10,6 @@ namespace chowdsp
 {
 namespace wdf
 {
-#if WDF_USING_JUCE
-    using namespace SIMDUtils;
-#endif // WDF_USING_JUCE
-
     using wdft::NumericType;
 
     /** Wave digital filter base class */
