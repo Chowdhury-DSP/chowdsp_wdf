@@ -198,7 +198,7 @@ namespace wdft
         T Is = (T) 0.0;
         T R_value = (T) 1.0e9;
     };
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDFT_SOURCES_H

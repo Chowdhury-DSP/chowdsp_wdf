@@ -239,7 +239,7 @@ namespace wdft
     {
         return PolarityInverterT<T, PType> (p1);
     }
-}
-}
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDFT_ADAPTORS_H

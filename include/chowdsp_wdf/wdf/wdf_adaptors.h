@@ -57,7 +57,7 @@ namespace wdf
             port2->connectToNode (this);
         }
     };
-}
-}
+} // namespace wdf
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDF_ADAPTORS_H

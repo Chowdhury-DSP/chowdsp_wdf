@@ -29,7 +29,6 @@
 
 namespace chowdsp
 {
-
 /**
  * Useful approximations for evaluating the Wright Omega function.
  *
