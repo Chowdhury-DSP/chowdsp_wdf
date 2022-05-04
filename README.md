@@ -29,10 +29,93 @@ target_link_libraries(my_cmake_target PUBLIC chowdsp_wdf)
 ### Requirements
 - C++14 or higher
 - CMake (Version 3.1+)
-- XSIMD
-  - Required for processing SIMD data types
-  - Highly recommended for circuits with R-Type adaptors
-  - Not needed otherwise
+- XSIMD (optional, see below)
+
+### Basic Usage
+
+A basic RC lowpass filter can be constructed as follows:
+```cpp
+namespace wdft = chowdsp::wdft;
+struct RCLowpass {
+    wdft::ResistorT<double> r1 { 1.0e3 };     // 1 KOhm Resistor
+    wdft::CapacitorT<double> c1 { 1.0e-6 };   // 1 uF capacitor
+    
+    wdft::WDFSeriesT<double, decltype (r1), decltype (c1)> s1 { r1, c1 };   // series connection of r1 and c1
+    wdft::IdealVoltageSourceT<double, decltype (s1)> vSource { s1 };        // input voltage source
+    
+    // prepare the WDF model here...
+    void prepare (double sampleRate) {
+        c1.prepare (sampleRate);
+    }
+    
+    // use the WDF model to process one sample of data
+    inline double processSample (double x) {
+        vSource.setVoltage (x);
+
+        vs.incident (p1.reflected());
+        p1.incident (vs.reflected());
+
+        return wdft::voltage<double> (c1);
+    }
+};
+```
+
+More complicated examples can be found in the
+[examples](https://github.com/jatinchowdhury18/WaveDigitalFilters) repository.
+
+### Using XSIMD
+
+There are two specific situations where you may want to use
+SIMD intrinsics as part of your WDF model:
+1. You want to run the same circuit model on several values in parallel. For example,
+   maybe you have a WDF model of a synthesizer voice, and want to run several voices,
+   like for a polyphonic synthesizer.
+2. You have a circuit model that requires an R-Type adaptor. The R-Type adaptor requires
+   a matrix multiply operation which can be greatly accelerated with SIMD intrinsics.
+
+In both cases, to use SIMD intrinsics in your WDF model, you must include `XSIMD`
+in your project _before_ `chowdsp_wdf`.
+
+```cpp
+#include <xsimd/xsmd.hpp> // this must be included _before_ the chowdsp_wdf header!
+#include <chowdsp_wdf/chowdsp_wdf.h>
+```
+
+For case 2 above, simply construct your circuit with an R-Type adaptor as desired,
+and the SIMD optomizations will be taken care of behind the scenes!
+
+For case 1 above, you will want to construct your WDF model so that the circuit elements
+may process XSIMD types. Going back to the RC lowpass example:
+```cpp
+namespace wdft = chowdsp::wdft;
+
+// Define the WDF model to process a template-defined FloatType
+template <typename FloatType>
+struct RCLowpass {
+    wdft::ResistorT<FloatType> r1 { 1.0e3 };     // 1 KOhm Resistor
+    wdft::CapacitorT<FloatType> c1 { 1.0e-6 };   // 1 uF capacitor
+    
+    wdft::WDFSeriesT<FloatType, decltype (r1), decltype (c1)> s1 { r1, c1 };   // series connection of r1 and c1
+    wdft::IdealVoltageSourceT<FloatType, decltype (s1)> vSource { s1 };        // input voltage source
+    
+    // prepare the WDF model here...
+    void prepare (double sampleRate) {
+        c1.prepare ((FloatType) sampleRate);
+    }
+    
+    // use the WDF model to process one sample of data
+    inline FloatType processSample (FloatType x) {
+        vSource.setVoltage (x);
+
+        vs.incident (p1.reflected());
+        p1.incident (vs.reflected());
+
+        return wdft::voltage<FloatType> (c1);
+    }
+};
+
+RCLowpass<xsimd::batch<double>> myFilter; // instantiate the WDF to process an XSIMD type!
+```
 
 ## Resources
 

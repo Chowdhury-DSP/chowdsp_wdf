@@ -18,7 +18,7 @@ namespace wdf
     {
     public:
         explicit WDF (std::string type) : type (std::move (type)) {}
-        virtual ~WDF() = default;
+        ~WDF() override = default;
 
         void connectToNode (WDF<T>* p) { parent = p; }
 
