@@ -5,7 +5,7 @@ include(cmake/CXXStandard.cmake)
 include(cmake/CPM.cmake)
 
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_SOURCE_DIR}/include)
 
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME}

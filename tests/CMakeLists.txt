@@ -1,4 +1,3 @@
-
 add_executable(chowdsp_wdf_tests)
 target_include_directories(chowdsp_wdf_tests PRIVATE .)
 target_sources(chowdsp_wdf_tests
@@ -9,7 +8,6 @@ target_sources(chowdsp_wdf_tests
         RTypeTest.cpp
         TestRunner.cpp
 )
-
 
 add_custom_command(TARGET chowdsp_wdf_tests
         POST_BUILD
