@@ -32,7 +32,7 @@ jobs:
 #      if: ${{ github.event_name != 'pull_request' }}
       uses: garygrossgarten/github-action-scp@release
       with:
-        local: ${{env.WORK_DIR}}/docs
+        local: docs
         remote: Library/Web/chowdsp/chowdsp_wdf
         host: ccrma-gate.stanford.edu
         username: jatin
