@@ -1,0 +1,36 @@
+name: Clang-Tidy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Run clang-tidy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Linux Deps
+        run: |
+          sudo apt-get update
+          sudo apt install clang-tidy
+
+      - name: Get latest CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure
+        shell: bash
+        run: cmake -Bbuild -DCHOWDSP_WDF_RUN_CLANG_TIDY=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --target chowdsp_wdf_clang_tidy

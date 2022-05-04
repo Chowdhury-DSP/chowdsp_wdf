@@ -80,7 +80,7 @@ namespace wdf
         /** Sets the current of the current source, in Amps */
         void setCurrent (T newI) { this->internalWDF.setCurrent (newI); }
     };
-}
-}
+} // namespace wdf
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDF_SOURCES_H

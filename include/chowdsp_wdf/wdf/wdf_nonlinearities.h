@@ -133,7 +133,7 @@ namespace wdf
             this->internalWDF.setDiodeParameters (newIs, newVt, nDiodes);
         }
     };
-}
-}
+} // namespace wdf
+} // namespace chowdsp
 
 #endif //CHOWDSP_WDF_WDF_NONLINEARITIES_H

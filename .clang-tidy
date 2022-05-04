@@ -1,4 +1,4 @@
-HeaderFilterRegex: '.*chowdsp_utils/modules/chowdsp_.*(WDF|chowdsp_).*'
+HeaderFilterRegex: '.*include/chowdsp_wdf.*'
 WarningsAsErrors: '*'
 Checks: '-*,
 bugprone-argument-comment,
