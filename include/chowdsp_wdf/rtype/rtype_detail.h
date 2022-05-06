@@ -41,7 +41,7 @@ namespace wdft
             ElementType* data() noexcept { return array; }
             const ElementType* data() const noexcept { return array; }
 
-            constexpr int size() { return arraySize; }
+            static constexpr int size() { return arraySize; }
             alignas (alignment) Array<ElementType, arraySize> array;
         };
 
@@ -50,7 +50,7 @@ namespace wdft
 
         /** Implementation for float/double. */
         template <typename T, int numPorts>
-        inline typename std::enable_if<std::is_floating_point<T>::value, void>::type
+        constexpr typename std::enable_if<std::is_floating_point<T>::value, void>::type
             RtypeScatter (const Matrix<T, numPorts>& S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
         {
             // input matrix (S) of size dim x dim
@@ -86,7 +86,7 @@ namespace wdft
 #if defined(XSIMD_HPP)
         /** Implementation for SIMD float/double. */
         template <typename T, int numPorts>
-        inline typename std::enable_if<! std::is_floating_point<T>::value, void>::type
+        constexpr typename std::enable_if<! std::is_floating_point<T>::value, void>::type
             RtypeScatter (const Matrix<T, numPorts>& S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
         {
             for (int c = 0; c < numPorts; ++c)
