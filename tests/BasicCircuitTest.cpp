@@ -117,8 +117,7 @@ TEST_CASE ("Basic Circuits Test")
         PolarityInverter<double> p1 (&s1);
         IdealVoltageSource<double> vs { &p1 };
 
-        auto testFreq = [&] (double freq, double expectedMagDB)
-        {
+        auto testFreq = [&] (double freq, double expectedMagDB) {
             c1.reset();
 
             double magnitude = 0.0;
@@ -154,8 +153,7 @@ TEST_CASE ("Basic Circuits Test")
         static constexpr float C = 1.0e-6f;
         static constexpr float L = 0.022f;
 
-        auto testFreq = [&] (float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1)
-        {
+        auto testFreq = [&] (float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1) {
             float magnitude = 0.0f;
             for (int n = 0; n < (int) fs; ++n)
             {
