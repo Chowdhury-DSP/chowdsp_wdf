@@ -40,9 +40,9 @@ TEST_CASE ("Basic Circuits Test")
 
     SECTION ("Shockley Diode")
     {
-        constexpr auto saturationCurrent = 1.0e-7;
-        constexpr auto thermalVoltage = 25.85e-3;
-        constexpr auto voltage = -0.35;
+        static constexpr auto saturationCurrent = 1.0e-7;
+        static constexpr auto thermalVoltage = 25.85e-3;
+        static constexpr auto voltage = -0.35;
 
         ResistiveVoltageSource<double> Vs;
         PolarityInverter<double> I1 { &Vs };
@@ -84,11 +84,11 @@ TEST_CASE ("Basic Circuits Test")
 
     SECTION ("Y-Parameter Test")
     {
-        constexpr auto y11 = 0.11;
-        constexpr auto y12 = 0.22;
-        constexpr auto y21 = 0.33;
-        constexpr auto y22 = 0.44;
-        constexpr auto voltage = 2.0;
+        static constexpr auto y11 = 0.11;
+        static constexpr auto y12 = 0.22;
+        static constexpr auto y21 = 0.33;
+        static constexpr auto y22 = 0.44;
+        static constexpr auto voltage = 2.0;
 
         Resistor<double> res { 10000.0 };
         YParameter<double> yParam { &res, y11, y12, y21, y22 };
@@ -104,11 +104,11 @@ TEST_CASE ("Basic Circuits Test")
 
     SECTION ("RC Lowpass")
     {
-        constexpr double fs = 44100.0;
-        constexpr double fc = 500.0;
+        static constexpr double fs = 44100.0;
+        static constexpr double fc = 500.0;
 
-        constexpr auto capValue = 1.0e-6;
-        constexpr auto resValue = 1.0 / ((2 * M_PI) * fc * capValue);
+        static constexpr auto capValue = 1.0e-6;
+        static constexpr auto resValue = 1.0 / ((2 * M_PI) * fc * capValue);
 
         Capacitor<double> c1 (capValue, fs);
         Resistor<double> r1 (resValue);
@@ -146,12 +146,12 @@ TEST_CASE ("Basic Circuits Test")
 
     SECTION ("Alpha Transform")
     {
-        constexpr float fs = 44100.0f;
+        static constexpr float fs = 44100.0f;
 
         // 1 kHz cutoff 2nd-order highpass
-        constexpr float R = 300.0f;
-        constexpr float C = 1.0e-6f;
-        constexpr float L = 0.022f;
+        static constexpr float R = 300.0f;
+        static constexpr float C = 1.0e-6f;
+        static constexpr float L = 0.022f;
 
         auto testFreq = [&] (float freq, float expectedMagDB, auto& vs, auto& p1, auto& l1) {
             float magnitude = 0.0f;
@@ -201,7 +201,7 @@ TEST_CASE ("Basic Circuits Test")
 
         // alpha = 1.0 filter
         {
-            constexpr float alpha = 1.0f;
+            static constexpr float alpha = 1.0f;
             c1.prepare (fs);
             c1.setAlpha (alpha);
             l1.prepare (fs);
@@ -212,7 +212,7 @@ TEST_CASE ("Basic Circuits Test")
 
         // alpha = 0.1 filter
         {
-            constexpr float alpha = 0.1f;
+            static constexpr float alpha = 0.1f;
             c1.reset();
             c1.setAlpha (alpha);
             l1.reset();
@@ -224,7 +224,7 @@ TEST_CASE ("Basic Circuits Test")
 
     SECTION ("Impedance Change")
     {
-        constexpr float fs = 44100.0f;
+        static constexpr float fs = 44100.0f;
 
         auto checkImpedanceChange = [=] (auto component, float value1, float value2, auto changeFunc, auto impedanceCalc) {
             REQUIRE (component.wdf.R == impedanceCalc (value1));
@@ -234,7 +234,7 @@ TEST_CASE ("Basic Circuits Test")
         };
 
         auto checkImpedanceProp = [=] (auto component, float value1, float value2, auto changeFunc, auto impedanceCalc) {
-            constexpr float otherR = 5000.0f;
+            static constexpr float otherR = 5000.0f;
             Resistor<float> r2 { otherR };
             WDFSeries<float> s1 (&component, &r2);
             IdealCurrentSource<float> is (&s1);

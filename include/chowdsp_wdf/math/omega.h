@@ -41,7 +41,7 @@ namespace Omega
 {
     /** approximation for log_2(x), optimized on the range [1, 2] */
     template <typename T>
-    inline T log2_approx (T x)
+    constexpr T log2_approx (T x)
     {
         constexpr T alpha = (T) 0.1640425613334452;
         constexpr T beta = (T) -1.098865286222744;
@@ -53,11 +53,11 @@ namespace Omega
 
     /** approximation for log(x) */
     template <typename T>
-    T log_approx (T x);
+    constexpr T log_approx (T x);
 
     /** approximation for log(x) (32-bit) */
     template <>
-    CHOWDSP_WDF_MAYBE_UNUSED inline float log_approx (float x)
+    CHOWDSP_WDF_MAYBE_UNUSED constexpr float log_approx (float x)
     {
         union
         {
@@ -74,7 +74,7 @@ namespace Omega
 
     /** approximation for log(x) (64-bit) */
     template <>
-    CHOWDSP_WDF_MAYBE_UNUSED inline double log_approx (double x)
+    CHOWDSP_WDF_MAYBE_UNUSED constexpr double log_approx (double x)
     {
         union
         {
@@ -91,7 +91,7 @@ namespace Omega
 
     /** approximation for 2^x, optimized on the range [0, 1] */
     template <typename T>
-    inline T pow2_approx (T x)
+    constexpr T pow2_approx (T x)
     {
         constexpr T alpha = (T) 0.07944154167983575;
         constexpr T beta = (T) 0.2274112777602189;
@@ -107,7 +107,7 @@ namespace Omega
 
     /** approximation for exp(x) (32-bit) */
     template <>
-    CHOWDSP_WDF_MAYBE_UNUSED inline float exp_approx (float x)
+    CHOWDSP_WDF_MAYBE_UNUSED constexpr float exp_approx (float x)
     {
         x = std::max (-126.0f, 1.442695040888963f * x);
 
@@ -127,7 +127,7 @@ namespace Omega
 
     /** approximation for exp(x) (64-bit) */
     template <>
-    CHOWDSP_WDF_MAYBE_UNUSED inline double exp_approx (double x)
+    CHOWDSP_WDF_MAYBE_UNUSED constexpr double exp_approx (double x)
     {
         x = std::max (-126.0, 1.442695040888963 * x);
 
@@ -147,7 +147,7 @@ namespace Omega
 
     /** First-order approximation of the Wright Omega functions */
     template <typename T>
-    inline T omega1 (T x)
+    constexpr T omega1 (T x)
     {
 #if defined(XSIMD_HPP)
         using xsimd::max;
@@ -159,20 +159,21 @@ namespace Omega
 
     /** Second-order approximation of the Wright Omega functions */
     template <typename T>
-    inline T omega2 (T x)
+    constexpr T omega2 (T x)
     {
-        const T x1 = (T) -3.684303659906469;
-        const T x2 = (T) 1.972967391708859;
-        const T a = (T) 9.451797158780131e-3;
-        const T b = (T) 1.126446405111627e-1;
-        const T c = (T) 4.451353886588814e-1;
-        const T d = (T) 5.836596684310648e-1;
+        constexpr T x1 = (T) -3.684303659906469;
+        constexpr T x2 = (T) 1.972967391708859;
+        constexpr T a = (T) 9.451797158780131e-3;
+        constexpr T b = (T) 1.126446405111627e-1;
+        constexpr T c = (T) 4.451353886588814e-1;
+        constexpr T d = (T) 5.836596684310648e-1;
+
         return x < x1 ? 0.f : (x > x2 ? x : d + x * (c + x * (b + x * a)));
     }
 
     /** Third-order approximation of the Wright Omega functions */
     template <typename T>
-    inline T omega3 (T x)
+    constexpr T omega3 (T x)
     {
         constexpr T x1 = (T) -3.341459552768620;
         constexpr T x2 = (T) 8.0;
@@ -180,21 +181,22 @@ namespace Omega
         constexpr T b = (T) 4.775931364975583e-2;
         constexpr T c = (T) 3.631952663804445e-1;
         constexpr T d = (T) 6.313183464296682e-1;
+
         return x < x1 ? 0.f : (x < x2 ? d + x * (c + x * (b + x * a)) : x - log_approx<T> (x));
     }
 
     /** Fourth-order approximation of the Wright Omega functions */
     template <typename T>
-    inline T omega4 (T x)
+    constexpr T omega4 (T x)
     {
-        const T y = omega3<T> (x);
+        const auto y = omega3<T> (x);
         return y - (y - exp_approx<T> (x - y)) / (y + (T) 1);
     }
 
 #if defined(XSIMD_HPP)
     /** Second-order approximation of the Wright Omega functions */
     template <typename T>
-    inline xsimd::batch<T> omega2 (xsimd::batch<T> x)
+    constexpr xsimd::batch<T> omega2 (xsimd::batch<T> x)
     {
         constexpr auto size = xsimd::batch<T>::size;
         T y alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
@@ -208,7 +210,7 @@ namespace Omega
 
     /** Third-order approximation of the Wright Omega functions */
     template <typename T>
-    inline xsimd::batch<T> omega3 (xsimd::batch<T> x)
+    constexpr xsimd::batch<T> omega3 (xsimd::batch<T> x)
     {
         constexpr auto size = xsimd::batch<T>::size;
         T y alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
@@ -222,7 +224,7 @@ namespace Omega
 
     /** Fourth-order approximation of the Wright Omega functions */
     template <typename T>
-    inline xsimd::batch<T> omega4 (xsimd::batch<T> x)
+    constexpr xsimd::batch<T> omega4 (xsimd::batch<T> x)
     {
         constexpr auto size = xsimd::batch<T>::size;
         T y alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[size] {};
