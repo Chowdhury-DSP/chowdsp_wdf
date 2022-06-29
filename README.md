@@ -158,7 +158,7 @@ Proc. of the 21st International Conference on Digital Audio Effects,
 ## Credits
 
 The diode models in the library utilise an approximation of the Wright Omega
-function based on [Stephen D'Angelo's implementation](https://www.dangelo.audio/dafx2019-omega.html),
+function based on [Stephano D'Angelo's implementation](https://www.dangelo.audio/dafx2019-omega.html),
 which is licensed under the MIT license.
 
 Many thanks to the following individuals who have contributed to the
