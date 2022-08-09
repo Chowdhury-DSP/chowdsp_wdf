@@ -107,19 +107,18 @@ void checkFunctionAccuracy (const FunctionTest<T>& funcTest, size_t N = 20)
 }
 
 template <typename T, typename Func>
-void checkWrightOmega (Func&& omega, T tol)
+void checkWrightOmega (Func&& omega, chowdsp::NumericType<T> tol)
 {
     for (auto vals : WO_vals)
     {
-        auto expected = (T) vals.second;
-        auto actual = omega ((T) vals.first);
+        auto expected = (T) (chowdsp::NumericType<T>) vals.second;
+        auto actual = omega ((T) (chowdsp::NumericType<T>) vals.first);
 
         REQUIRE (actual == SIMDApprox<T> (expected).margin (tol));
     }
 }
 
 TEMPLATE_TEST_CASE ("Omega Test", "", float, double, xsimd::batch<float>, xsimd::batch<double>)
-//TEMPLATE_TEST_CASE ("Omega Test", "", xsimd::batch<float>)
 {
     SECTION ("Log2 Test")
     {
@@ -163,25 +162,21 @@ TEMPLATE_TEST_CASE ("Omega Test", "", float, double, xsimd::batch<float>, xsimd:
 
     SECTION ("Omega1 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega1 (x); }, 2.1f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega1 (x); }, 2.1);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega1 (x); }, 2.1f);
     }
 
     SECTION ("Omega2 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega2 (x); }, 2.1f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega2 (x); }, 2.1);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega2 (x); }, 2.1f);
     }
 
     SECTION ("Omega3 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega3 (x); }, 0.3f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega3 (x); }, 0.3);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega3 (x); }, 0.3f);
     }
 
     SECTION ("Omega4 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega4 (x); }, 0.05f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega4 (x); }, 0.05);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega4 (x); }, 0.05f);
     }
 }

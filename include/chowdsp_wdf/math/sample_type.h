@@ -57,34 +57,97 @@ inline xsimd::batch<T> select (const xsimd::batch_bool<T>& b, const xsimd::batch
     return xsimd::select (b, t, f);
 }
 
-// casting helpers... @TODO: implement for AVX and NEON
-template <typename Ret, typename Arg>
-xsimd::batch<Ret> xsimd_cast (const xsimd::batch<Arg>&);
+template <typename Ret, typename Arg, typename Arch>
+xsimd::batch<Ret, Arch> xsimd_cast (const xsimd::batch<Arg, Arch>&);
 
-template<>
-inline xsimd::batch<float> xsimd_cast (const xsimd::batch<int32_t>& x)
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<float, Arch>>::type
+    xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
 {
     return _mm_cvtepi32_ps (x);
 }
 
-template<>
-inline xsimd::batch<double> xsimd_cast (const xsimd::batch<int64_t>& x)
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<double, Arch>>::type
+    xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
 {
     auto tmp = _mm_shuffle_epi32 (x, _MM_SHUFFLE(1, 3, 2, 0));
     return _mm_cvtepi32_pd (tmp);
 }
 
-template<>
-inline xsimd::batch<int32_t> xsimd_cast (const xsimd::batch<float>& x)
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<int32_t, Arch>>::type
+    xsimd_cast (const xsimd::batch<float, Arch>& x)
 {
     return _mm_cvtps_epi32 (x);
 }
 
-template<>
-inline xsimd::batch<int64_t> xsimd_cast (const xsimd::batch<double>& x)
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<int64_t, Arch>>::type
+    xsimd_cast (const xsimd::batch<double, Arch>& x)
 {
     auto tmp = _mm_cvtpd_epi32 (x);
     return _mm_shuffle_epi32 (tmp, _MM_SHUFFLE(3, 1, 2, 0));
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::avx, Arch>::value, typename xsimd::batch<float, Arch>>::type
+    xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
+{
+    return _mm256_cvtepi32_ps (x);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::avx2, Arch>::value, typename xsimd::batch<double, Arch>>::type
+    xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
+{
+    auto tmp = _mm256_shuffle_epi32 (x, _MM_SHUFFLE(2, 0, 2, 0));
+    tmp = _mm256_permute4x64_epi64 (tmp, _MM_SHUFFLE(2, 1, 2, 1));
+    auto tmp2 = _mm256_castsi256_si128 (tmp);
+    return _mm256_cvtepi32_pd (tmp2);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::avx, Arch>::value, typename xsimd::batch<int32_t, Arch>>::type
+    xsimd_cast (const xsimd::batch<float, Arch>& x)
+{
+    return _mm256_cvtps_epi32 (x);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::avx2, Arch>::value, typename xsimd::batch<int64_t, Arch>>::type
+    xsimd_cast (const xsimd::batch<double, Arch>& x)
+{
+    auto tmp = _mm256_cvtpd_epi32 (x);
+    return _mm256_cvtepi32_epi64 (tmp);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<float, Arch>>::type
+    xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
+{
+    return vcvtaq_s32_f32 (x);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<int32_t, Arch>>::type
+    xsimd_cast (const xsimd::batch<float, Arch>& x)
+{
+    return vcvtq_f32_s32 (x);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<double, Arch>>::type
+    xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
+{
+    return vcvtaq_s64_f64 (x);
+}
+
+template <typename Ret, typename Arch>
+inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<int64_t, Arch>>::type
+    xsimd_cast (const xsimd::batch<double, Arch>& x)
+{
+    return vcvtq_f64_s64 (x);
 }
 #endif
 } // namespace chowdsp
