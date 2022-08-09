@@ -28,3 +28,9 @@ option(CHOWDSP_WDF_BUILD_TESTS "Add targets for building and running chowdsp_wdf
 if (CHOWDSP_WDF_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
+
+# if we are the top-level project, then configure the project benchmarks
+option(CHOWDSP_WDF_BUILD_BENCHMARKS "Add targets for building and running chowdsp_wdf benchmarks" ${is_toplevel})
+if (CHOWDSP_WDF_BUILD_BENCHMARKS)
+    add_subdirectory(bench)
+endif()
