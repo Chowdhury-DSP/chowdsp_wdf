@@ -58,6 +58,10 @@ inline xsimd::batch<T> select (const xsimd::batch_bool<T>& b, const xsimd::batch
 template <typename Ret, typename Arg, typename Arch>
 xsimd::batch<Ret, Arch> xsimd_cast (const xsimd::batch<Arg, Arch>&);
 
+#ifndef _MM_SHUFFLE // on ARM _MM_SHUFFLE is not defined, so we have to define a dummy
+#define _MM_SHUFFLE(...) 0
+#endif
+
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<float, Arch>>::type
     xsimd_cast (const xsimd::batch<int32_t, Arch>& x)

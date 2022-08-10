@@ -44,4 +44,4 @@ jobs:
 
       - name: Run
         shell: bash
-        run: ./build/test-binary/wright_omega_bench
+        run: ./build/bench-binary/wright_omega_bench
