@@ -53,6 +53,7 @@ std::unordered_map<double, double> WO_vals {
     { 10.0, 7.9294200950196965 },
 };
 
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
 template <typename T>
 struct SIMDApproxImpl
 {
@@ -82,6 +83,10 @@ private:
 
 template <typename T>
 using SIMDApprox = typename std::conditional<! std::is_floating_point<std::remove_const_t<T>>::value, SIMDApproxImpl<chowdsp::NumericType<T>>, Approx>::type;
+#else
+template <typename T>
+using SIMDApprox = Approx;
+#endif
 
 template <typename T>
 using FuncType = std::function<T (T)>;
