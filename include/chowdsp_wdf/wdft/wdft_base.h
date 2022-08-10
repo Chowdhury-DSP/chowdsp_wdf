@@ -44,9 +44,7 @@ namespace wdft
     template <typename T>
     struct WDFMembers
     {
-        using NumericType = NumericType<T>;
-
-        T R = (NumericType) 1.0e-9; /* impedance */
+        T R = (NumericType<T>) 1.0e-9; /* impedance */
         T G = (T) 1.0 / R; /* admittance */
         T a = (T) 0.0; /* incident wave */
         T b = (T) 0.0; /* reflected wave */

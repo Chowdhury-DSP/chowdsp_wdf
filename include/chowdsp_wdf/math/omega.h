@@ -46,7 +46,13 @@ namespace Omega
      * https://en.wikipedia.org/wiki/Estrin%27s_scheme
      */
     template <int ORDER, typename T, typename X>
-    constexpr typename std::enable_if<(ORDER > 1), decltype (T {} * X {})>::type estrin (const T (&coeffs)[ORDER + 1], const X& x)
+    inline typename std::enable_if<(ORDER == 1), decltype (T {} * X {})>::type estrin (const T (&coeffs)[ORDER + 1], const X& x)
+    {
+        return coeffs[1] + coeffs[0] * x;
+    }
+
+    template <int ORDER, typename T, typename X>
+    inline typename std::enable_if<(ORDER > 1), decltype (T {} * X {})>::type estrin (const T (&coeffs)[ORDER + 1], const X& x)
     {
         decltype (T {} * X {}) temp[ORDER / 2 + 1];
         for (int n = ORDER; n >= 0; n -= 2)
@@ -55,12 +61,6 @@ namespace Omega
         temp[0] = (ORDER % 2 == 0) ? coeffs[0] : temp[0];
 
         return estrin<ORDER / 2> (temp, x * x); // recurse!
-    }
-
-    template <int ORDER, typename T, typename X>
-    constexpr typename std::enable_if<(ORDER == 1), decltype (T {} * X {})>::type estrin (const T (&coeffs)[ORDER + 1], const X& x)
-    {
-        return coeffs[1] + coeffs[0] * x;
     }
 
     /** approximation for log_2(x), optimized on the range [1, 2] */
@@ -75,6 +75,7 @@ namespace Omega
         return estrin<3> ({ alpha, beta, gamma, zeta }, x);
     }
 
+#if defined(XSIMD_HPP)
     /** approximation for log_2(x), optimized on the range [1, 2] */
     template <typename T>
     inline xsimd::batch<T> log2_approx (const xsimd::batch<T>& x)
@@ -86,6 +87,7 @@ namespace Omega
 
         return estrin<3> ({ alpha, beta, gamma, zeta }, x);
     }
+#endif
 
     /** approximation for log(x) */
     template <typename T>
@@ -173,6 +175,7 @@ namespace Omega
         return estrin<3> ({ alpha, beta, gamma, zeta }, x);
     }
 
+#if defined(XSIMD_HPP)
     template <typename T>
     inline xsimd::batch<T> pow2_approx (const xsimd::batch<T>& x)
     {
@@ -183,6 +186,7 @@ namespace Omega
 
         return estrin<3> ({ alpha, beta, gamma, zeta }, x);
     }
+#endif
 
     /** approximation for exp(x) */
     template <typename T>

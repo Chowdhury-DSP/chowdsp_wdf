@@ -2,7 +2,10 @@
 
 #include <catch2/catch2.hpp>
 
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
 #include <xsimd/xsimd.hpp>
+#endif
+
 #include <chowdsp_wdf/chowdsp_wdf.h>
 
 /** Reference values generated from scipy.special */
@@ -78,7 +81,7 @@ private:
 };
 
 template <typename T>
-using SIMDApprox = std::conditional_t<! std::is_floating_point_v<std::remove_const_t<T>>, SIMDApproxImpl<chowdsp::NumericType<T>>, Approx>;
+using SIMDApprox = typename std::conditional<! std::is_floating_point<std::remove_const_t<T>>::value, SIMDApproxImpl<chowdsp::NumericType<T>>, Approx>::type;
 
 template <typename T>
 using FuncType = std::function<T (T)>;
