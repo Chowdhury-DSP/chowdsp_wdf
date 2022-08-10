@@ -40,7 +40,6 @@ inline T select (bool b, const T& t, const T& f)
     return b ? t : f;
 }
 
-
 #if defined(XSIMD_HPP)
 /** Returns true if all the elements in a SIMD vector are equal */
 template <typename T>
@@ -70,7 +69,7 @@ template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<double, Arch>>::type
     xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
 {
-    auto tmp = _mm_shuffle_epi32 (x, _MM_SHUFFLE(1, 3, 2, 0));
+    auto tmp = _mm_shuffle_epi32 (x, _MM_SHUFFLE (1, 3, 2, 0));
     return _mm_cvtepi32_pd (tmp);
 }
 
@@ -86,7 +85,7 @@ inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typena
     xsimd_cast (const xsimd::batch<double, Arch>& x)
 {
     auto tmp = _mm_cvtpd_epi32 (x);
-    return _mm_shuffle_epi32 (tmp, _MM_SHUFFLE(3, 1, 2, 0));
+    return _mm_shuffle_epi32 (tmp, _MM_SHUFFLE (3, 1, 2, 0));
 }
 
 template <typename Ret, typename Arch>
@@ -100,8 +99,8 @@ template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::avx2, Arch>::value, typename xsimd::batch<double, Arch>>::type
     xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
 {
-    auto tmp = _mm256_shuffle_epi32 (x, _MM_SHUFFLE(2, 0, 2, 0));
-    tmp = _mm256_permute4x64_epi64 (tmp, _MM_SHUFFLE(2, 1, 2, 1));
+    auto tmp = _mm256_shuffle_epi32 (x, _MM_SHUFFLE (2, 0, 2, 0));
+    tmp = _mm256_permute4x64_epi64 (tmp, _MM_SHUFFLE (2, 1, 2, 1));
     auto tmp2 = _mm256_castsi256_si128 (tmp);
     return _mm256_cvtepi32_pd (tmp2);
 }
