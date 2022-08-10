@@ -20,7 +20,7 @@ function(setup_benchmark target file)
         benchmark::benchmark
     )
 
-    if(NOT (${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION} STREQUAL ""))
+    if(NOT ("${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION}" STREQUAL ""))
         target_link_libraries(${target} PRIVATE ${PROJECT_NAME} xsimd)
         target_compile_definitions(${target} PRIVATE CHOWDSP_WDF_TEST_WITH_XSIMD=1)
     endif()

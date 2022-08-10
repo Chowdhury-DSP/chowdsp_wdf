@@ -31,9 +31,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Check XSIMD xsimd_version
-        run: echo "${{ matrix.xsimd_version }}"
-
       - name: Configure
         shell: bash
         run: cmake -DCMAKE_BUILD_TYPE=Release -Bbuild -DCHOWDSP_WDF_TEST_WITH_XSIMD_VERSION="${{ matrix.xsimd_version }}" ${{ matrix.cmake_args }}

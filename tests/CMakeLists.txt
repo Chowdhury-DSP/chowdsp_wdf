@@ -18,7 +18,7 @@ add_custom_command(TARGET chowdsp_wdf_tests
         COMMAND ${CMAKE_COMMAND} -E make_directory test-binary
         COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:chowdsp_wdf_tests>" test-binary)
 
-if(NOT (${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION} STREQUAL ""))
+if(NOT ("${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION}" STREQUAL ""))
     target_link_libraries(chowdsp_wdf_tests PRIVATE ${PROJECT_NAME} xsimd)
     target_compile_definitions(chowdsp_wdf_tests PRIVATE CHOWDSP_WDF_TEST_WITH_XSIMD=1)
 endif()
