@@ -10,8 +10,6 @@ namespace chowdsp
 {
 namespace wdf
 {
-    using wdft::NumericType;
-
     /** Wave digital filter base class */
     template <typename T>
     class WDF : public wdft::BaseWDF
