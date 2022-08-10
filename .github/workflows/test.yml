@@ -38,7 +38,7 @@ jobs:
             cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
           - os: macos-latest
             name: "Mac ARM (XSIMD)"
-            cmake_args: "-GXcode -DCMAKE_OSX_ARCHITECTURES=arm64 -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+            cmake_args: "-GXcode -DCMAKE_OSX_ARCHITECTURES=arm64 -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON -DCHOWDSP_WDF_BUILD_BENCHMARKS=OFF"
 
     steps:
       - name: Get latest CMake

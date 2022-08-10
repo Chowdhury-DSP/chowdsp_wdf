@@ -17,9 +17,13 @@ function(setup_benchmark target file)
 
     target_link_libraries(${target} PRIVATE
         chowdsp_wdf
-        xsimd
         benchmark::benchmark
     )
+
+    if(CHOWDSP_WDF_TEST_WITH_XSIMD)
+        target_link_libraries(${target} PRIVATE ${PROJECT_NAME} xsimd)
+        target_compile_definitions(${target} PRIVATE CHOWDSP_WDF_TEST_WITH_XSIMD=1)
+    endif()
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
         if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

@@ -1,5 +1,8 @@
 #include <benchmark/benchmark.h>
+
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
 #include <xsimd/xsimd.hpp>
+#endif
 #include <chowdsp_wdf/chowdsp_wdf.h>
 
 #include <random>
@@ -46,14 +49,16 @@ constexpr int N = 1000;
 static auto testFloatVec = makeRandomVector<float> (N);
 static auto testDoubleVec = makeRandomVector<double> (N);
 
-//SCALAR_BENCH (floatWrightOmega3, testFloatVec, chowdsp::Omega::omega3)
-//SCALAR_BENCH (floatWrightOmega4, testFloatVec, chowdsp::Omega::omega4)
-//SCALAR_BENCH (doubleWrightOmega3, testDoubleVec, chowdsp::Omega::omega3)
-//SCALAR_BENCH (doubleWrightOmega4, testDoubleVec, chowdsp::Omega::omega4)
+SCALAR_BENCH (floatWrightOmega3, testFloatVec, chowdsp::Omega::omega3)
+SCALAR_BENCH (floatWrightOmega4, testFloatVec, chowdsp::Omega::omega4)
+SCALAR_BENCH (doubleWrightOmega3, testDoubleVec, chowdsp::Omega::omega3)
+SCALAR_BENCH (doubleWrightOmega4, testDoubleVec, chowdsp::Omega::omega4)
 
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
 SIMD_BENCH (floatSIMDWrightOmega3, testFloatVec, chowdsp::Omega::omega3, xsimd::batch<float>)
 SIMD_BENCH (floatSIMDWrightOmega4, testFloatVec, chowdsp::Omega::omega4, xsimd::batch<float>)
 SIMD_BENCH (doubleSIMDWrightOmega3, testDoubleVec, chowdsp::Omega::omega3, xsimd::batch<double>)
 SIMD_BENCH (doubleSIMDWrightOmega4, testDoubleVec, chowdsp::Omega::omega4, xsimd::batch<double>)
+#endif
 
 BENCHMARK_MAIN();
