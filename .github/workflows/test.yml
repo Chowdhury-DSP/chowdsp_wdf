@@ -20,10 +20,10 @@ jobs:
         include:
           - os: ubuntu-latest
             name: "Linux"
-            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
+            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
           - os: ubuntu-latest
             name: "Linux (XSIMD)"
-            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
           - os: windows-2019
             name: "Windows"
             cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
@@ -32,10 +32,10 @@ jobs:
             cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
           - os: macos-latest
             name: "Mac x86_64"
-            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
+            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
           - os: macos-latest
             name: "Mac x86_64 (XSIMD)"
-            cmake_args: "-DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
           - os: macos-latest
             name: "Mac ARM (XSIMD)"
             cmake_args: "-GXcode -DCMAKE_OSX_ARCHITECTURES=arm64 -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
@@ -51,11 +51,11 @@ jobs:
         env:
           CMAKE_ARGS: ${{ matrix.cmake_args }}
         shell: bash
-        run: cmake -Bbuild $CMAKE_ARGS
+        run: cmake -DCMAKE_BUILD_TYPE=Release -Bbuild $CMAKE_ARGS
 
       - name: Build
         shell: bash
-        run: cmake --build build --config Release --parallel 4
+        run: cmake --build build --config Release --parallel 4 --target chowdsp_wdf_tests
 
       - name: Test
         if: matrix.name != 'Mac ARM (XSIMD)' # can't run tests on ARM (for now)

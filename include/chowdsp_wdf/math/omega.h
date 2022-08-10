@@ -28,8 +28,6 @@
 #include <algorithm>
 #include "sample_type.h"
 
-#include <xsimd/xsimd.hpp> // @REMOVE_THIS
-
 namespace chowdsp
 {
 /**

@@ -118,7 +118,11 @@ void checkWrightOmega (Func&& omega, chowdsp::NumericType<T> tol)
     }
 }
 
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
 TEMPLATE_TEST_CASE ("Omega Test", "", float, double, xsimd::batch<float>, xsimd::batch<double>)
+#else
+TEMPLATE_TEST_CASE ("Omega Test", "", float, double)
+#endif
 {
     SECTION ("Log2 Test")
     {

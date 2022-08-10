@@ -2,7 +2,6 @@
 #define CHOWDSP_WDF_SAMPLE_TYPE_H
 
 #include <type_traits>
-#include <xsimd/xsimd.hpp> // @REMOVE_THIS
 
 #ifndef DOXYGEN
 
