@@ -1,6 +1,11 @@
 #include <unordered_map>
 
 #include <catch2/catch2.hpp>
+
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
+#include <xsimd/xsimd.hpp>
+#endif
+
 #include <chowdsp_wdf/chowdsp_wdf.h>
 
 /** Reference values generated from scipy.special */
@@ -48,135 +53,142 @@ std::unordered_map<double, double> WO_vals {
     { 10.0, 7.9294200950196965 },
 };
 
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
+template <typename T>
+struct SIMDApproxImpl
+{
+    explicit SIMDApproxImpl (xsimd::batch<T> const& value) : m_value (value)
+    {
+    }
+
+    SIMDApproxImpl& margin (T const& newMargin)
+    {
+        m_margin = newMargin;
+        return *this;
+    }
+
+    friend bool operator== (const xsimd::batch<T>& lhs, SIMDApproxImpl const& rhs)
+    {
+        bool result = true;
+        for (size_t i = 0; i < xsimd::batch<T>::size; ++i)
+            result &= (lhs.get (i) == Approx (rhs.m_value.get (0)).margin (rhs.m_margin));
+
+        return result;
+    }
+
+private:
+    xsimd::batch<T> m_value;
+    T m_margin;
+};
+
+template <typename T>
+using SIMDApprox = typename std::conditional<! std::is_floating_point<std::remove_const_t<T>>::value, SIMDApproxImpl<chowdsp::NumericType<T>>, Approx>::type;
+#else
+template <typename T>
+using SIMDApprox = Approx;
+#endif
+
 template <typename T>
 using FuncType = std::function<T (T)>;
 
 template <typename T>
 struct FunctionTest
 {
-    T low;
-    T high;
+    chowdsp::NumericType<T> low;
+    chowdsp::NumericType<T> high;
     FuncType<T> testFunc;
-    FuncType<T> refFunc;
-    T tol;
+    FuncType<chowdsp::NumericType<T>> refFunc;
+    chowdsp::NumericType<T> tol;
 };
 
 template <typename T>
 void checkFunctionAccuracy (const FunctionTest<T>& funcTest, size_t N = 20)
 {
-    auto step = (funcTest.high - funcTest.low) / (T) N;
-    for (T x = funcTest.low; x < funcTest.high; x += step)
+    auto step = (funcTest.high - funcTest.low) / (chowdsp::NumericType<T>) N;
+    for (chowdsp::NumericType<T> x = funcTest.low; x < funcTest.high; x += step)
     {
         auto expected = funcTest.refFunc (x);
         auto actual = funcTest.testFunc (x);
 
-        REQUIRE (actual == Approx (expected).margin (funcTest.tol));
+        REQUIRE (actual == SIMDApprox<T> (expected).margin (funcTest.tol));
     }
 }
 
 template <typename T, typename Func>
-void checkWrightOmega (Func&& omega, T tol)
+void checkWrightOmega (Func&& omega, chowdsp::NumericType<T> tol)
 {
     for (auto vals : WO_vals)
     {
-        auto expected = (T) vals.second;
-        auto actual = omega ((T) vals.first);
+        auto expected = (T) (chowdsp::NumericType<T>) vals.second;
+        auto actual = omega ((T) (chowdsp::NumericType<T>) vals.first);
 
-        REQUIRE (actual == Approx (expected).margin (tol));
+        REQUIRE (actual == SIMDApprox<T> (expected).margin (tol));
     }
 }
 
-TEST_CASE ("Omega Test")
+#if CHOWDSP_WDF_TEST_WITH_XSIMD
+TEMPLATE_TEST_CASE ("Omega Test", "", float, double, xsimd::batch<float>, xsimd::batch<double>)
+#else
+TEMPLATE_TEST_CASE ("Omega Test", "", float, double)
+#endif
 {
     SECTION ("Log2 Test")
     {
-        checkFunctionAccuracy (FunctionTest<float> {
+        checkFunctionAccuracy (FunctionTest<TestType> {
             1.0f,
             2.0f,
-            [] (auto x) { return chowdsp::Omega::log2_approx<float> (x); },
+            [] (auto x) { return chowdsp::Omega::log2_approx<chowdsp::NumericType<TestType>> (x); },
             [] (auto x) { return std::log2 (x); },
             0.008f });
-
-        checkFunctionAccuracy (FunctionTest<double> {
-            1.0,
-            2.0,
-            [] (auto x) { return chowdsp::Omega::log2_approx<double> (x); },
-            [] (auto x) { return std::log2 (x); },
-            0.008 });
     }
 
     SECTION ("Log Test")
     {
-        checkFunctionAccuracy (FunctionTest<float> {
+        checkFunctionAccuracy (FunctionTest<TestType> {
             8.0f,
             12.0f,
-            [] (auto x) { return chowdsp::Omega::log_approx<float> (x); },
+            [] (auto x) { return chowdsp::Omega::log_approx<TestType> (x); },
             [] (auto x) { return std::log (x); },
             0.005f });
-
-        checkFunctionAccuracy (FunctionTest<double> {
-            8.0,
-            12.0,
-            [] (auto x) { return chowdsp::Omega::log_approx<double> (x); },
-            [] (auto x) { return std::log (x); },
-            0.005 });
     }
 
     SECTION ("Pow2 Test")
     {
-        checkFunctionAccuracy (FunctionTest<float> {
+        checkFunctionAccuracy (FunctionTest<TestType> {
             0.0f,
             1.0f,
-            [] (auto x) { return chowdsp::Omega::pow2_approx<float> (x); },
+            [] (auto x) { return chowdsp::Omega::pow2_approx<chowdsp::NumericType<TestType>> (x); },
             [] (auto x) { return std::pow (2.0f, x); },
             0.001f });
-
-        checkFunctionAccuracy (FunctionTest<double> {
-            0.0,
-            1.0,
-            [] (auto x) { return chowdsp::Omega::pow2_approx<double> (x); },
-            [] (auto x) { return std::pow (2.0, x); },
-            0.001 });
     }
 
     SECTION ("Exp Test")
     {
-        checkFunctionAccuracy (FunctionTest<float> {
+        checkFunctionAccuracy (FunctionTest<TestType> {
             -4.0f,
             2.0f,
-            [] (auto x) { return chowdsp::Omega::exp_approx<float> (x); },
+            [] (auto x) { return chowdsp::Omega::exp_approx<TestType> (x); },
             [] (auto x) { return std::exp (x); },
-            0.005f });
-
-        checkFunctionAccuracy (FunctionTest<double> {
-            -4.0,
-            2.0,
-            [] (auto x) { return chowdsp::Omega::exp_approx<double> (x); },
-            [] (auto x) { return std::exp (x); },
-            0.005 });
+            0.03f });
     }
 
     SECTION ("Omega1 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega1 (x); }, 2.1f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega1 (x); }, 2.1);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega1 (x); }, 2.1f);
     }
 
     SECTION ("Omega2 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega2 (x); }, 2.1f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega2 (x); }, 2.1);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega2 (x); }, 2.1f);
     }
 
     SECTION ("Omega3 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega3 (x); }, 0.3f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega3 (x); }, 0.3);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega3 (x); }, 0.3f);
     }
 
     SECTION ("Omega4 Test")
     {
-        checkWrightOmega ([] (float x) { return chowdsp::Omega::omega4 (x); }, 0.05f);
-        checkWrightOmega ([] (double x) { return chowdsp::Omega::omega4 (x); }, 0.05);
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega4 (x); }, 0.05f);
     }
 }

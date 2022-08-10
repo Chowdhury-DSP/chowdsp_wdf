@@ -1,0 +1,47 @@
+name: Bench
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build_and_test:
+    name: Run tests on ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: "Linux"
+          - os: windows-2019
+            name: "Windows"
+          - os: macos-latest
+            name: "Mac x86_64"
+
+    steps:
+      - name: Get latest CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure
+        env:
+          CMAKE_ARGS: ${{ matrix.cmake_args }}
+        shell: bash
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON -Bbuild $CMAKE_ARGS
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Release --parallel 4 --target wright_omega_bench
+
+      - name: Run
+        shell: bash
+        run: ./build/bench-binary/wright_omega_bench

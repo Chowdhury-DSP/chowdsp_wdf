@@ -47,7 +47,7 @@ jobs:
 
       - name: Build
         shell: bash
-        run: cmake --build build --parallel 4
+        run: cmake --build build --parallel 4 --target chowdsp_wdf_tests
 
       - name: Test
         shell: bash
