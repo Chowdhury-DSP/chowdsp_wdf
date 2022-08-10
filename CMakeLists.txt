@@ -23,14 +23,27 @@ else ()
     set(is_toplevel 0)
 endif ()
 
-# if we are the top-level project, then configure the project tests
+# if we are the top-level project, then configure the project tests and benchmarks
 option(CHOWDSP_WDF_BUILD_TESTS "Add targets for building and running chowdsp_wdf tests" ${is_toplevel})
+option(CHOWDSP_WDF_BUILD_BENCHMARKS "Add targets for building and running chowdsp_wdf benchmarks" ${is_toplevel})
+
+set(CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION "" CACHE STRING "Tests chowdsp_wdf with XSIMD version")
+if(NOT (${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION} STREQUAL ""))
+    message(STATUS "Importing XSIMD version ${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION} with CPM")
+    CPMAddPackage(
+        NAME xsimd
+        GITHUB_REPOSITORY xtensor-stack/xsimd
+        GIT_TAG ${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION}
+    )
+
+    target_link_libraries(chowdsp_wdf_tests PRIVATE ${PROJECT_NAME} xsimd)
+    target_compile_definitions(chowdsp_wdf_tests PRIVATE CHOWDSP_WDF_TEST_WITH_XSIMD=1)
+endif()
+
 if (CHOWDSP_WDF_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-# if we are the top-level project, then configure the project benchmarks
-option(CHOWDSP_WDF_BUILD_BENCHMARKS "Add targets for building and running chowdsp_wdf benchmarks" ${is_toplevel})
 if (CHOWDSP_WDF_BUILD_BENCHMARKS)
     add_subdirectory(bench)
 endif()
