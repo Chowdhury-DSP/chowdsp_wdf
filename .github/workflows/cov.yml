@@ -13,18 +13,12 @@ on:
 
 jobs:
   build_and_test:
-    name: Analyze test coverage ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
+    name: Analyze test coverage with XSIMD version ${{ matrix.xsimd_version }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
       matrix:
-        include:
-          - os: ubuntu-latest
-            name: "Linux"
-            cmake_args: "-DCMAKE_BUILD_TYPE=Debug -DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
-          - os: ubuntu-latest
-            name: "Linux (XSIMD)"
-            cmake_args: "-DCMAKE_BUILD_TYPE=Debug -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
+        xsimd_version: ["", "8.0.5"]
 
     steps:
       - name: Install Linux Deps
@@ -32,6 +26,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt install lcov
+          lcov --version
 
       - name: Get latest CMake
         uses: lukka/get-cmake@latest
@@ -40,10 +35,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure
-        env:
-          CMAKE_ARGS: ${{ matrix.cmake_args }}
         shell: bash
-        run: cmake -Bbuild -DCHOWDSP_WDF_CODE_COVERAGE=ON $CMAKE_ARGS
+        run: cmake -Bbuild -DCHOWDSP_WDF_CODE_COVERAGE=ON -DCHOWDSP_WDF_TEST_WITH_XSIMD_VERSION="${{ matrix.xsimd_version }}"
 
       - name: Build
         shell: bash

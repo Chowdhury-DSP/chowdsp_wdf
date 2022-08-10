@@ -12,33 +12,17 @@ on:
 
 jobs:
   build_and_test:
-    name: Run tests on ${{ matrix.name }}
+    name: Run tests on ${{ matrix.os }} with XSIMD version ${{ matrix.xsimd_version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
       matrix:
+        os: [ubuntu-latest, windows-2019, macos-latest]
+        xsimd_version: ["", "8.0.0", "8.0.5", "8.1.0"]
         include:
-          - os: ubuntu-latest
-            name: "Linux"
-            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
-          - os: ubuntu-latest
-            name: "Linux (XSIMD)"
-            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
-          - os: windows-2019
-            name: "Windows"
-            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
-          - os: windows-2019
-            name: "Windows (XSIMD)"
-            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
           - os: macos-latest
-            name: "Mac x86_64"
-            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=OFF"
-          - os: macos-latest
-            name: "Mac x86_64 (XSIMD)"
-            cmake_args: "-DCHOWDSP_WDF_TEST_WITH_XSIMD=ON"
-          - os: macos-latest
-            name: "Mac ARM (XSIMD)"
-            cmake_args: "-GXcode -DCMAKE_OSX_ARCHITECTURES=arm64 -DCHOWDSP_WDF_TEST_WITH_XSIMD=ON -DCHOWDSP_WDF_BUILD_BENCHMARKS=OFF"
+            xsimd_version: "8.0.5"
+            cmake_args: "-GXcode -D\"CMAKE_OSX_ARCHITECTURES=arm64;x86_64\" -DCHOWDSP_WDF_BUILD_BENCHMARKS=OFF"
 
     steps:
       - name: Get latest CMake
@@ -48,16 +32,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Configure
-        env:
-          CMAKE_ARGS: ${{ matrix.cmake_args }}
         shell: bash
-        run: cmake -DCMAKE_BUILD_TYPE=Release -Bbuild $CMAKE_ARGS
+        run: cmake -DCMAKE_BUILD_TYPE=Release -Bbuild -DCHOWDSP_WDF_TEST_WITH_XSIMD_VERSION="${{ matrix.xsimd_version }}" ${{ matrix.cmake_args }}
 
       - name: Build
         shell: bash
         run: cmake --build build --config Release --parallel 4 --target chowdsp_wdf_tests
 
       - name: Test
-        if: matrix.name != 'Mac ARM (XSIMD)' # can't run tests on ARM (for now)
         shell: bash
         run: ./build/test-binary/chowdsp_wdf_tests

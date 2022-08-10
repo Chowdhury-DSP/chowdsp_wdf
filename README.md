@@ -29,7 +29,7 @@ target_link_libraries(my_cmake_target PUBLIC chowdsp_wdf)
 ### Dependencies
 - C++14 or higher
 - CMake (Version 3.1+, optional)
-- XSIMD (optional, see below)
+- XSIMD (Version 8.0.0+, optional)
 
 ### Basic Usage
 
