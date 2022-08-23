@@ -67,7 +67,7 @@ namespace wdft
                 v_type bc {};
                 for (int r = 0; r < vec_size; r += simd_size)
                     bc = xsimd::fma (xsimd::load_aligned (S_[c].data() + r), xsimd::load_aligned (a_ + r), bc);
-                #if XSIMD_VERSION_MAJOR > 8
+                #if XSIMD_VERSION_MAJOR >= 9
                     b_[c] = xsimd::reduce_add (bc);
                 #else
                     b_[c] = xsimd::hadd (bc);
