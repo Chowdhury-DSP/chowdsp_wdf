@@ -1,9 +1,11 @@
 #ifndef WAVEDIGITALFILTERS_DEFER_IMPEDANCE_H
 #define WAVEDIGITALFILTERS_DEFER_IMPEDANCE_H
 
-namespace chowdsp::wdft
+namespace chowdsp
 {
-/**
+namespace wdft
+{
+    /**
  * Let's say that you've got some fancy adaptor in your WDF (e.g. an R-Type adaptor),
  * which requires a somewhat expensive computation to re-calculate the adaptor's impedance.
  * In that case, you may not want to re-calculate the impedance every time a downstream element
@@ -41,34 +43,39 @@ namespace chowdsp::wdft
  * }
  * ```
  */
-template <typename... Elements>
-class ScopedDeferImpedancePropagation
-{
-public:
-    explicit ScopedDeferImpedancePropagation (std::tuple<Elements&...> elems) : elements (elems)
+    template <typename... Elements>
+    class ScopedDeferImpedancePropagation
     {
-        static_assert ((std::is_base_of<BaseWDF, Elements>::value && ...), "All element types must be derived from BaseWDF");
+    public:
+        explicit ScopedDeferImpedancePropagation (std::tuple<Elements&...> elems) : elements (elems)
+        {
+#if __cplusplus >= 201703L // With C++17 and later, it's easy to assert that all the elements are derived from BaseWDF
+            static_assert ((std::is_base_of<BaseWDF, Elements>::value && ...), "All element types must be derived from BaseWDF");
+#endif
 
-        rtype_detail::forEachInTuple (
-            [] (auto& el, size_t) {
-                el.dontPropagateImpedance = true;
-            },
-            elements);
-    }
+            rtype_detail::forEachInTuple (
+                [] (auto& el, size_t)
+                {
+                    el.dontPropagateImpedance = true;
+                },
+                elements);
+        }
 
-    ~ScopedDeferImpedancePropagation()
-    {
-        rtype_detail::forEachInTuple (
-            [] (auto& el, size_t) {
-                el.dontPropagateImpedance = false;
-                el.calcImpedance();
-            },
-            elements);
-    }
+        ~ScopedDeferImpedancePropagation()
+        {
+            rtype_detail::forEachInTuple (
+                [] (auto& el, size_t)
+                {
+                    el.dontPropagateImpedance = false;
+                    el.calcImpedance();
+                },
+                elements);
+        }
 
-private:
-    std::tuple<Elements&...> elements;
-};
-} // namespace chowdsp::wdft
+    private:
+        std::tuple<Elements&...> elements;
+    };
+} // namespace wdft
+} // namespace chowdsp
 
 #endif //WAVEDIGITALFILTERS_DEFER_IMPEDANCE_H
