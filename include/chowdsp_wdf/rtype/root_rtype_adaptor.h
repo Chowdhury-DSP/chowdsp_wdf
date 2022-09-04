@@ -25,6 +25,19 @@ namespace wdft
         /** Number of ports connected to RootRtypeAdaptor */
         static constexpr auto numPorts = int (sizeof...(PortTypes));
 
+        explicit RootRtypeAdaptor (PortTypes&... dps) : downPorts (std::tie (dps...))
+        {
+            for (int i = 0; i < numPorts; i++)
+            {
+                b_vec[i] = (T) 0;
+                a_vec[i] = (T) 0;
+            }
+
+            rtype_detail::forEachInTuple ([&] (auto& port, size_t) { port.connectToParent (this); },
+                                          downPorts);
+        }
+
+        [[deprecated ("Prefer the alternative constuctor which accepts the port references directly")]]
         explicit RootRtypeAdaptor (std::tuple<PortTypes&...> dps) : downPorts (dps)
         {
             for (int i = 0; i < numPorts; i++)
