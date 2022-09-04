@@ -5,7 +5,7 @@
 #pragma warning(disable : 4244 4464 4514 4324)
 #endif
 
-// define NODISCARD if we can
+// define maybe_unused if we can
 #if __cplusplus >= 201703L
 #define CHOWDSP_WDF_MAYBE_UNUSED [[maybe_unused]]
 #else
@@ -22,6 +22,8 @@ constexpr int CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT = 16;
 #include "wdft/wdft.h"
 #include "wdf/wdf.h"
 #include "rtype/rtype.h"
+
+#include "util/defer_impedance.h"
 
 #if defined(_MSC_VER)
 #pragma warning(pop)

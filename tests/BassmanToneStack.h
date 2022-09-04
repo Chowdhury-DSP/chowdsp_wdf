@@ -32,13 +32,20 @@ public:
 
     void setParams (FloatType highPot, FloatType lowPot, FloatType midPot)
     {
-        Res1m.setResistanceValue (highPot * R1);
-        Res1p.setResistanceValue (((FloatType) 1 - highPot) * R1);
+        {
+            using DeferImpedance = chowdsp::wdft::ScopedDeferImpedancePropagation<decltype (S1), decltype (S3), decltype (S4)>;
+            DeferImpedance deferImpedance { S1, S3, S4 };
 
-        Res2.setResistanceValue (((FloatType) 1 - lowPot) * R2);
+            Res1m.setResistanceValue (highPot * R1);
+            Res1p.setResistanceValue (((FloatType) 1 - highPot) * R1);
 
-        Res3m.setResistanceValue (midPot * R3);
-        Res3p.setResistanceValue (((FloatType) 1 - midPot) * R3);
+            Res2.setResistanceValue (((FloatType) 1 - lowPot) * R2);
+
+            Res3m.setResistanceValue (midPot * R3);
+            Res3p.setResistanceValue (((FloatType) 1 - midPot) * R3);
+        }
+
+        S2.propagateImpedanceChange();
     }
 
 private:
