@@ -50,8 +50,7 @@ public:
         static_assert ((std::is_base_of_v<BaseWDF, Elements> && ...), "All element types must be derived from BaseWDF");
 
         rtype_detail::forEachInTuple (
-            [] (auto& el, size_t)
-            {
+            [] (auto& el, size_t) {
                 el.dontPropagateImpedance = true;
             },
             elements);
@@ -60,8 +59,7 @@ public:
     ~ScopedDeferImpedancePropagation()
     {
         rtype_detail::forEachInTuple (
-            [] (auto& el, size_t)
-            {
+            [] (auto& el, size_t) {
                 el.dontPropagateImpedance = false;
                 el.calcImpedance();
             },
