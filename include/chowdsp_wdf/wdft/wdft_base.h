@@ -19,6 +19,9 @@ namespace wdft
 
         inline virtual void propagateImpedanceChange()
         {
+            if (dontPropagateImpedance)
+                return; // the impedance propagation is being deferred until later...
+
             calcImpedance();
 
             if (parent != nullptr)
@@ -27,6 +30,12 @@ namespace wdft
 
     protected:
         BaseWDF* parent = nullptr;
+
+    private:
+        bool dontPropagateImpedance = false;
+
+        template <typename... Elements>
+        friend class ScopedDeferImpedancePropagation;
     };
 
     /** Base class for propagating impedance changes into root WDF elements */
