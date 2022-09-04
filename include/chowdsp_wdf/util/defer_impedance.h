@@ -54,8 +54,7 @@ namespace wdft
 #endif
 
             rtype_detail::forEachInTuple (
-                [] (auto& el, size_t)
-                {
+                [] (auto& el, size_t) {
                     el.dontPropagateImpedance = true;
                 },
                 elements);
@@ -64,8 +63,7 @@ namespace wdft
         ~ScopedDeferImpedancePropagation()
         {
             rtype_detail::forEachInTuple (
-                [] (auto& el, size_t)
-                {
+                [] (auto& el, size_t) {
                     el.dontPropagateImpedance = false;
                     el.calcImpedance();
                 },
