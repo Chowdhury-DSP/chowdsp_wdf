@@ -47,7 +47,7 @@ class ScopedDeferImpedancePropagation
 public:
     explicit ScopedDeferImpedancePropagation (std::tuple<Elements&...> elems) : elements (elems)
     {
-        static_assert ((std::is_base_of_v<BaseWDF, Elements> && ...), "All element types must be derived from BaseWDF");
+        static_assert ((std::is_base_of<BaseWDF, Elements>::value && ...), "All element types must be derived from BaseWDF");
 
         rtype_detail::forEachInTuple (
             [] (auto& el, size_t) {
