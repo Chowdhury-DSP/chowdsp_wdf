@@ -29,7 +29,8 @@ public:
     void setParams (float bassParam, float trebleParam)
     {
         {
-            chowdsp::wdft::ScopedDeferImpedancePropagation deferImpedance { std::tie (P1, S2, S3, S4) };
+            using DeferImpedance = chowdsp::wdft::ScopedDeferImpedancePropagation<decltype (P1), decltype (S2), decltype (S3), decltype (S4)>;
+            DeferImpedance deferImpedance { P1, S2, S3, S4 };
 
             Pb_plus.setResistanceValue (Pb * bassParam);
             Pb_minus.setResistanceValue (Pb * (1.0f - bassParam));

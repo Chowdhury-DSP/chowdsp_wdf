@@ -47,7 +47,7 @@ namespace wdft
     class ScopedDeferImpedancePropagation
     {
     public:
-        explicit ScopedDeferImpedancePropagation (std::tuple<Elements&...> elems) : elements (elems)
+        explicit ScopedDeferImpedancePropagation (Elements&... elems) : elements (std::tie (elems...))
         {
 #if __cplusplus >= 201703L // With C++17 and later, it's easy to assert that all the elements are derived from BaseWDF
             static_assert ((std::is_base_of<BaseWDF, Elements>::value && ...), "All element types must be derived from BaseWDF");
