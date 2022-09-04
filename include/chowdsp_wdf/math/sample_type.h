@@ -7,6 +7,7 @@
 
 namespace chowdsp
 {
+#if ! (JUCE_MODULE_AVAILABLE_chowdsp_dsp || JUCE_MODULE_AVAILABLE_chowdsp_simd)
 /** Useful structs for determining the internal data type of SIMD types */
 namespace SampleTypeHelpers
 {
@@ -22,6 +23,7 @@ namespace SampleTypeHelpers
         using Type = typename T::value_type;
     };
 } // namespace SampleTypeHelpers
+#endif
 
 /** Type alias for a SIMD numeric type */
 template <typename T>
