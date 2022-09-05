@@ -39,8 +39,7 @@ namespace wdft
                                           downPorts);
         }
 
-        [[deprecated ("Prefer the alternative constuctor which accepts the port references directly")]]
-        explicit RtypeAdaptor (std::tuple<PortTypes&...> dps) : downPorts (dps)
+        [[deprecated ("Prefer the alternative constuctor which accepts the port references directly")]] explicit RtypeAdaptor (std::tuple<PortTypes&...> dps) : downPorts (dps)
         {
             for (int i = 0; i < numPorts; i++)
             {
