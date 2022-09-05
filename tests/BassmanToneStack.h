@@ -107,5 +107,5 @@ private:
     };
 
     using RType = wdft::RootRtypeAdaptor<FloatType, ImpedanceCalc, decltype (S1), decltype (S3), decltype (S2), decltype (Cap2), decltype (Res4), decltype (Cap3)>;
-    RType R { std::tie (S1, S3, S2, Cap2, Res4, Cap3) };
+    RType R { S1, S3, S2, Cap2, Res4, Cap3 };
 };
