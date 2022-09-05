@@ -7,7 +7,7 @@
 
 namespace chowdsp
 {
-#if ! (JUCE_MODULE_AVAILABLE_chowdsp_dsp || JUCE_MODULE_AVAILABLE_chowdsp_simd)
+#if ! (JUCE_MODULE_AVAILABLE_chowdsp_dsp)
 /** Useful structs for determining the internal data type of SIMD types */
 namespace SampleTypeHelpers
 {
