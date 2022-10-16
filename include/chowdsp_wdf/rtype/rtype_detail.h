@@ -16,7 +16,7 @@ namespace wdft
     {
         /** Divides two numbers and rounds up if there is a remainder. */
         template <typename T>
-        [[maybe_unused]] constexpr T ceil_div(T num, T den)
+        [[maybe_unused]] constexpr T ceil_div (T num, T den)
         {
             return (num + den - 1) / den;
         }
@@ -87,7 +87,7 @@ namespace wdft
 #if defined(XSIMD_HPP)
             using v_type = xsimd::simd_type<T>;
             constexpr auto simd_size = (int) v_type::size;
-            constexpr auto vec_size = ceil_div(numPorts, simd_size) * simd_size;
+            constexpr auto vec_size = ceil_div (numPorts, simd_size) * simd_size;
 
             for (int c = 0; c < vec_size; c += simd_size)
             {
