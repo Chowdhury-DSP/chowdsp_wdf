@@ -1,7 +1,7 @@
 #ifndef CHOWDSP_WDF_WDF_RTYPE_H
 #define CHOWDSP_WDF_WDF_RTYPE_H
 
-#include <vector>
+#include <functional>
 #include "../wdf/wdf_base.h"
 #include "rtype_detail.h"
 

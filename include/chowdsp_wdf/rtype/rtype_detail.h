@@ -17,7 +17,7 @@ namespace wdft
     {
         /** Divides two numbers and rounds up if there is a remainder. */
         template <typename T>
-        [[maybe_unused]] constexpr T ceil_div (T num, T den)
+        constexpr T ceil_div (T num, T den)
         {
             return (num + den - 1) / den;
         }
