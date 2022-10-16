@@ -68,7 +68,7 @@ namespace wdf
         }
 
         /** Implement this function to set the scattering matrix when an incoming impedance changes */
-        std::function<void (RootRtypeAdaptor&)> impedanceCalculator = [](auto&) {};
+        std::function<void (RootRtypeAdaptor&)> impedanceCalculator = [] (auto&) {};
 
     private:
         void incident (T) noexcept override {}
@@ -161,7 +161,7 @@ namespace wdf
         }
 
         /** Implement this function to set the scattering matrix when an incoming impedance changes */
-        std::function<T (RtypeAdaptor&)> impedanceCalculator = [](auto&) { return (T) 1; };
+        std::function<T (RtypeAdaptor&)> impedanceCalculator = [] (auto&) { return (T) 1; };
 
     private:
         int getPortIndex (int vectorIndex)

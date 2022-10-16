@@ -15,8 +15,7 @@ class TonestackPoly
 public:
     TonestackPoly() : R ({ &S1, &S3, &S2, &Cap2, &Res4, &Cap3 })
     {
-        R.impedanceCalculator = [] (auto& R)
-        {
+        R.impedanceCalculator = [] (auto& R) {
             const auto Ra = R.getPortImpedance (0);
             const auto Rb = R.getPortImpedance (1);
             const auto Rc = R.getPortImpedance (2);

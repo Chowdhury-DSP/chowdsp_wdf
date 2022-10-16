@@ -17,8 +17,7 @@ class BaxandallWDFPoly
 public:
     BaxandallWDFPoly()
     {
-        R.impedanceCalculator = [] (auto& R)
-        {
+        R.impedanceCalculator = [] (auto& R) {
             const auto Ra = R.getPortImpedance (0);
             const auto Rb = R.getPortImpedance (1);
             const auto Rc = R.getPortImpedance (2);
