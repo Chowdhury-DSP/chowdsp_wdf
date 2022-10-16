@@ -2,6 +2,7 @@
 #define CHOWDSP_WDF_RTYPE_DETAIL_H
 
 #include <array>
+#include <algorithm>
 #include <initializer_list>
 #include <tuple>
 
@@ -13,6 +14,32 @@ namespace wdft
     /** Utility functions used internally by the R-Type adaptor */
     namespace rtype_detail
     {
+        /** Divides two numbers and rounds up if there is a remainder. */
+        template <typename T>
+        [[maybe_unused]] constexpr T ceil_div(T num, T den)
+        {
+            return (num + den - 1) / den;
+        }
+
+        template <typename T, size_t base_size>
+        constexpr typename std::enable_if<std::is_floating_point<T>::value, size_t>::type array_pad()
+        {
+#if defined(XSIMD_HPP)
+            using v_type = xsimd::simd_type<T>;
+            constexpr auto simd_size = v_type::size;
+            constexpr auto num_simd_registers = ceil_div (base_size, simd_size);
+            return num_simd_registers * simd_size;
+#else
+            return base_size;
+#endif
+        }
+
+        template <typename T, size_t base_size>
+        constexpr typename std::enable_if<! std::is_floating_point<T>::value, size_t>::type array_pad()
+        {
+            return base_size;
+        }
+
         /** Functions to do a function for each element in the tuple */
         template <typename Fn, typename Tuple, size_t... Ix>
         constexpr void forEachInTuple (Fn&& fn, Tuple&& tuple, std::index_sequence<Ix...>) noexcept (noexcept (std::initializer_list<int> { (fn (std::get<Ix> (tuple), Ix), 0)... }))
@@ -29,9 +56,6 @@ namespace wdft
             forEachInTuple (std::forward<Fn> (fn), std::forward<Tuple> (tuple), TupleIndexSequence<Tuple> {});
         }
 
-        template <typename T, int N>
-        using Array = T[(size_t) N];
-
         template <typename ElementType, int arraySize, int alignment = CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT>
         struct AlignedArray
         {
@@ -41,8 +65,11 @@ namespace wdft
             ElementType* data() noexcept { return array; }
             const ElementType* data() const noexcept { return array; }
 
+            void clear() { std::fill (std::begin (array), std::end (array), ElementType {}); }
             static constexpr int size() { return arraySize; }
-            alignas (alignment) Array<ElementType, arraySize> array;
+
+        private:
+            alignas (alignment) ElementType array[array_pad<ElementType, (size_t) arraySize>()] {};
         };
 
         template <typename T, int nRows, int nCols = nRows, int alignment = CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT>
@@ -51,7 +78,7 @@ namespace wdft
         /** Implementation for float/double. */
         template <typename T, int numPorts>
         constexpr typename std::enable_if<std::is_floating_point<T>::value, void>::type
-            RtypeScatter (const Matrix<T, numPorts>& S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
+            RtypeScatter (const Matrix<T, numPorts>& S_, const AlignedArray<T, numPorts>& a_, AlignedArray<T, numPorts>& b_)
         {
             // input matrix (S) of size dim x dim
             // input vector (a) of size 1 x dim
@@ -60,29 +87,22 @@ namespace wdft
 #if defined(XSIMD_HPP)
             using v_type = xsimd::simd_type<T>;
             constexpr auto simd_size = (int) v_type::size;
-            constexpr auto vec_size = numPorts - numPorts % simd_size;
+            constexpr auto vec_size = ceil_div(numPorts, simd_size) * simd_size;
 
-            for (int c = 0; c < numPorts; ++c)
+            for (int c = 0; c < vec_size; c += simd_size)
             {
-                v_type bc {};
-                for (int r = 0; r < vec_size; r += simd_size)
-                    bc = xsimd::fma (xsimd::load_aligned (S_[c].data() + r), xsimd::load_aligned (a_ + r), bc);
-#if XSIMD_VERSION_MAJOR >= 9
-                b_[c] = xsimd::reduce_add (bc);
-#else
-                b_[c] = xsimd::hadd (bc);
-#endif
+                auto b_vec = a_[0] * xsimd::load_aligned (S_[0].data() + c);
+                for (int r = 1; r < numPorts; ++r)
+                    b_vec = xsimd::fma (xsimd::broadcast (a_[r]), xsimd::load_aligned (S_[r].data() + c), b_vec);
 
-                // remainder of ops that can't be vectorized
-                for (int r = vec_size; r < numPorts; ++r)
-                    b_[c] += S_[c][r] * a_[r];
+                xsimd::store_aligned (b_.data() + c, b_vec);
             }
 #else // No SIMD
             for (int c = 0; c < numPorts; ++c)
             {
-                b_[c] = (T) 0;
-                for (int r = 0; r < numPorts; ++r)
-                    b_[c] += S_[c][r] * a_[r];
+                b_[c] = S_[0][c] * a_[0];
+                for (int r = 1; r < numPorts; ++r)
+                    b_[c] += S_[r][c] * a_[r];
             }
 #endif // SIMD options
         }
@@ -91,13 +111,13 @@ namespace wdft
         /** Implementation for SIMD float/double. */
         template <typename T, int numPorts>
         constexpr typename std::enable_if<! std::is_floating_point<T>::value, void>::type
-            RtypeScatter (const Matrix<T, numPorts>& S_, const Array<T, numPorts>& a_, Array<T, numPorts>& b_)
+            RtypeScatter (const Matrix<T, numPorts>& S_, const AlignedArray<T, numPorts>& a_, AlignedArray<T, numPorts>& b_)
         {
             for (int c = 0; c < numPorts; ++c)
             {
-                b_[c] = (T) 0;
-                for (int r = 0; r < numPorts; ++r)
-                    b_[c] += S_[c][r] * a_[r];
+                b_[c] = S_[0][c] * a_[0];
+                for (int r = 1; r < numPorts; ++r)
+                    b_[c] += S_[r][c] * a_[r];
             }
         }
 #endif // XSIMD

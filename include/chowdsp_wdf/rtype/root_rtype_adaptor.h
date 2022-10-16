@@ -27,11 +27,8 @@ namespace wdft
 
         explicit RootRtypeAdaptor (PortTypes&... dps) : downPorts (std::tie (dps...))
         {
-            for (int i = 0; i < numPorts; i++)
-            {
-                b_vec[i] = (T) 0;
-                a_vec[i] = (T) 0;
-            }
+            b_vec.clear();
+            a_vec.clear();
 
             rtype_detail::forEachInTuple ([&] (auto& port, size_t) { port.connectToParent (this); },
                                           downPorts);
@@ -39,11 +36,8 @@ namespace wdft
 
         [[deprecated ("Prefer the alternative constuctor which accepts the port references directly")]] explicit RootRtypeAdaptor (std::tuple<PortTypes&...> dps) : downPorts (dps)
         {
-            for (int i = 0; i < numPorts; i++)
-            {
-                b_vec[i] = (T) 0;
-                a_vec[i] = (T) 0;
-            }
+            b_vec.clear();
+            a_vec.clear();
 
             rtype_detail::forEachInTuple ([&] (auto& port, size_t) { port.connectToParent (this); },
                                           downPorts);
@@ -69,7 +63,7 @@ namespace wdft
         {
             for (int i = 0; i < numPorts; ++i)
                 for (int j = 0; j < numPorts; ++j)
-                    S_matrix[i][j] = mat[i][j];
+                    S_matrix[j][i] = mat[i][j];
         }
 
         /** Computes both the incident and reflected waves at this root node. */
@@ -86,8 +80,8 @@ namespace wdft
         std::tuple<PortTypes&...> downPorts; // tuple of ports connected to RtypeAdaptor
 
         rtype_detail::Matrix<T, numPorts> S_matrix; // square matrix representing S
-        T a_vec alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of inputs to Rport
-        T b_vec alignas (CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT)[numPorts]; // temp matrix of outputs from Rport
+        rtype_detail::AlignedArray<T, numPorts> a_vec; // temp matrix of inputs to Rport
+        rtype_detail::AlignedArray<T, numPorts> b_vec; // temp matrix of outputs from Rport
     };
 } // namespace wdft
 } // namespace chowdsp
