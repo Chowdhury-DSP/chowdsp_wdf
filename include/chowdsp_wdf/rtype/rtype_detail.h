@@ -133,12 +133,12 @@ namespace wdf
         using wdft::rtype_detail::ceil_div;
 
         template <typename T>
-        constexpr typename std::enable_if<std::is_floating_point<T>::value, size_t>::type array_pad (size_t base_size)
+        typename std::enable_if<std::is_floating_point<T>::value, size_t>::type array_pad (size_t base_size)
         {
 #if defined(XSIMD_HPP)
             using v_type = xsimd::simd_type<T>;
             constexpr auto simd_size = v_type::size;
-            constexpr auto num_simd_registers = ceil_div (base_size, simd_size);
+            const auto num_simd_registers = ceil_div (base_size, simd_size);
             return num_simd_registers * simd_size;
 #else
             return base_size;
@@ -146,7 +146,7 @@ namespace wdf
         }
 
         template <typename T>
-        constexpr typename std::enable_if<! std::is_floating_point<T>::value, size_t>::type array_pad (size_t base_size)
+        typename std::enable_if<! std::is_floating_point<T>::value, size_t>::type array_pad (size_t base_size)
         {
             return base_size;
         }
