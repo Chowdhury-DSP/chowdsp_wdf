@@ -91,6 +91,8 @@ inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typena
     xsimd_cast (const xsimd::batch<double, Arch>& x)
 {
     auto tmp = _mm_cvtpd_epi32 (x);
+    tmp[1] |= x.get (0) >= 0.0 ? 0 : 0xFFFFFFFF;
+    tmp[1] |= x.get (1) >= 0.0 ? 0 : 0xFFFFFFFF00000000;
     return _mm_shuffle_epi32 (tmp, _MM_SHUFFLE (3, 1, 2, 0));
 }
 

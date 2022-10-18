@@ -142,11 +142,11 @@ TEST_CASE ("SIMD Cast Test")
     SECTION ("Int32 to Float")
     {
         xsimd::batch<int32_t> x { -23, 0, 33, 101 };
-        const auto int_batch = chowdsp::xsimd_cast<float> (x);
-        REQUIRE (int_batch.get (0) == -23.0f);
-        REQUIRE (int_batch.get (1) == 0.0f);
-        REQUIRE (int_batch.get (2) == 33.0f);
-        REQUIRE (int_batch.get (3) == 101.0f);
+        const auto float_batch = chowdsp::xsimd_cast<float> (x);
+        REQUIRE (float_batch.get (0) == -23.0f);
+        REQUIRE (float_batch.get (1) == 0.0f);
+        REQUIRE (float_batch.get (2) == 33.0f);
+        REQUIRE (float_batch.get (3) == 101.0f);
     }
 
     SECTION ("Double to Int64")
@@ -169,15 +169,15 @@ TEST_CASE ("SIMD Cast Test")
     {
         {
             xsimd::batch<int64_t> x { -23, 0 };
-            const auto int_batch = chowdsp::xsimd_cast<double> (x);
-            REQUIRE (int_batch.get (0) == -23.0);
-            REQUIRE (int_batch.get (1) == 0.0);
+            const auto double_batch = chowdsp::xsimd_cast<double> (x);
+            REQUIRE (double_batch.get (0) == -23.0);
+            REQUIRE (double_batch.get (1) == 0.0);
         }
         {
             xsimd::batch<int64_t> x { 33, 101 };
-            const auto int_batch = chowdsp::xsimd_cast<double> (x);
-            REQUIRE (int_batch.get (0) == 33.0);
-            REQUIRE (int_batch.get (1) == 101.0);
+            const auto double_batch = chowdsp::xsimd_cast<double> (x);
+            REQUIRE (double_batch.get (0) == 33.0);
+            REQUIRE (double_batch.get (1) == 101.0);
         }
     }
 }
