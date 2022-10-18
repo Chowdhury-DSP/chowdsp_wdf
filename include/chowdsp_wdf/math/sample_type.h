@@ -130,28 +130,28 @@ template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<float, Arch>>::type
     xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
 {
-    return vcvtaq_s32_f32 (x);
+    return vcvtq_f32_s32 (x);
 }
 
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<int32_t, Arch>>::type
     xsimd_cast (const xsimd::batch<float, Arch>& x)
 {
-    return vcvtq_f32_s32 (x);
+    return vcvtq_s32_f32 (x);
 }
 
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<double, Arch>>::type
     xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
 {
-    return vcvtaq_s64_f64 (x);
+    return vcvtq_f64_s64 (x);
 }
 
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<int64_t, Arch>>::type
     xsimd_cast (const xsimd::batch<double, Arch>& x)
 {
-    return vcvtq_f64_s64 (x);
+    return vcvtq_s64_f64 (x);
 }
 #endif
 } // namespace chowdsp
