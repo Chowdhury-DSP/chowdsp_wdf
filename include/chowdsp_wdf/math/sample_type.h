@@ -60,10 +60,7 @@ inline xsimd::batch<T> select (const xsimd::batch_bool<T>& b, const xsimd::batch
 template <typename Ret, typename Arg, typename Arch>
 xsimd::batch<Ret, Arch> xsimd_cast (const xsimd::batch<Arg, Arch>&);
 
-#ifndef _MM_SHUFFLE // on ARM _MM_SHUFFLE is not defined, so we have to define a dummy
-#define _MM_SHUFFLE(...) 0
-#endif
-
+#if XSIMD_WITH_SSE2
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typename xsimd::batch<float, Arch>>::type
     xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
@@ -97,14 +94,18 @@ inline typename std::enable_if<std::is_base_of<xsimd::sse2, Arch>::value, typena
     tmp = _mm_or_si128 (tmp, _mm_load_si128 ((__m128i*) mask));
     return _mm_shuffle_epi32 (tmp, _MM_SHUFFLE (3, 1, 2, 0));
 }
+#endif // XSIMD_WITH_SSE2
 
+#if XSIMD_WITH_AVX
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::avx, Arch>::value, typename xsimd::batch<float, Arch>>::type
     xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
 {
     return _mm256_cvtepi32_ps (x);
 }
+#endif
 
+#if XSIMD_WITH_AVX2
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::avx2, Arch>::value, typename xsimd::batch<double, Arch>>::type
     xsimd_cast (const xsimd::batch<int64_t, Arch>& x)
@@ -129,7 +130,9 @@ inline typename std::enable_if<std::is_base_of<xsimd::avx2, Arch>::value, typena
     auto tmp = _mm256_cvtpd_epi32 (x);
     return _mm256_cvtepi32_epi64 (tmp);
 }
+#endif // XSIMD_WITH_AVX2
 
+#if XSIMD_WITH_NEON64
 template <typename Ret, typename Arch>
 inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typename xsimd::batch<float, Arch>>::type
     xsimd_cast (const xsimd::batch<int32_t, Arch>& x)
@@ -157,7 +160,8 @@ inline typename std::enable_if<std::is_base_of<xsimd::neon, Arch>::value, typena
 {
     return vcvtq_s64_f64 (x);
 }
-#endif
+#endif // XSIMD_WITH_NEON64
+#endif // defined(XSIMD_HPP)
 } // namespace chowdsp
 
 #endif // DOXYGEN
