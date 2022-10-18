@@ -194,10 +194,8 @@ TEMPLATE_TEST_CASE ("Omega Test", "", float, double)
         checkFunctionAccuracy (FunctionTest<TestType> {
             1.0f,
             2.0f,
-            [] (auto x)
-            { return chowdsp::Omega::log2_approx<chowdsp::NumericType<TestType>> (x); },
-            [] (auto x)
-            { return std::log2 (x); },
+            [] (auto x) { return chowdsp::Omega::log2_approx<chowdsp::NumericType<TestType>> (x); },
+            [] (auto x) { return std::log2 (x); },
             0.008f });
     }
 
@@ -206,10 +204,8 @@ TEMPLATE_TEST_CASE ("Omega Test", "", float, double)
         checkFunctionAccuracy (FunctionTest<TestType> {
             8.0f,
             12.0f,
-            [] (auto x)
-            { return chowdsp::Omega::log_approx<TestType> (x); },
-            [] (auto x)
-            { return std::log (x); },
+            [] (auto x) { return chowdsp::Omega::log_approx<TestType> (x); },
+            [] (auto x) { return std::log (x); },
             0.005f });
     }
 
@@ -218,10 +214,8 @@ TEMPLATE_TEST_CASE ("Omega Test", "", float, double)
         checkFunctionAccuracy (FunctionTest<TestType> {
             0.0f,
             1.0f,
-            [] (auto x)
-            { return chowdsp::Omega::pow2_approx<chowdsp::NumericType<TestType>> (x); },
-            [] (auto x)
-            { return std::pow (2.0f, x); },
+            [] (auto x) { return chowdsp::Omega::pow2_approx<chowdsp::NumericType<TestType>> (x); },
+            [] (auto x) { return std::pow (2.0f, x); },
             0.001f });
     }
 
@@ -230,38 +224,32 @@ TEMPLATE_TEST_CASE ("Omega Test", "", float, double)
         checkFunctionAccuracy (FunctionTest<TestType> {
             -4.0f,
             2.0f,
-            [] (auto x)
-            { return chowdsp::Omega::exp_approx<TestType> (x); },
-            [] (auto x)
-            { return std::exp (x); },
+            [] (auto x) { return chowdsp::Omega::exp_approx<TestType> (x); },
+            [] (auto x) { return std::exp (x); },
             0.03f });
     }
 
     SECTION ("Omega1 Test")
     {
-        checkWrightOmega<TestType> ([] (TestType x)
-                                    { return chowdsp::Omega::omega1 (x); },
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega1 (x); },
                                     2.1f);
     }
 
     SECTION ("Omega2 Test")
     {
-        checkWrightOmega<TestType> ([] (TestType x)
-                                    { return chowdsp::Omega::omega2 (x); },
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega2 (x); },
                                     2.1f);
     }
 
     SECTION ("Omega3 Test")
     {
-        checkWrightOmega<TestType> ([] (TestType x)
-                                    { return chowdsp::Omega::omega3 (x); },
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega3 (x); },
                                     0.3f);
     }
 
     SECTION ("Omega4 Test")
     {
-        checkWrightOmega<TestType> ([] (TestType x)
-                                    { return chowdsp::Omega::omega4 (x); },
+        checkWrightOmega<TestType> ([] (TestType x) { return chowdsp::Omega::omega4 (x); },
                                     0.05f);
     }
 }
