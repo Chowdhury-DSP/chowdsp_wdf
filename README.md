@@ -52,8 +52,8 @@ struct RCLowpass {
     inline double processSample (double x) {
         vSource.setVoltage (x);
 
-        vs.incident (p1.reflected());
-        p1.incident (vs.reflected());
+        vSource.incident (s1.reflected());
+        s1.incident (vSource.reflected());
 
         return wdft::voltage<double> (c1);
     }
