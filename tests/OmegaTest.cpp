@@ -127,63 +127,6 @@ void checkWrightOmega (Func&& omega, chowdsp::NumericType<T> tol)
 }
 
 #if CHOWDSP_WDF_TEST_WITH_XSIMD
-TEST_CASE ("SIMD Cast Test")
-{
-    SECTION ("Float to Int32")
-    {
-        xsimd::batch<float> x { -23.1f, 0.0f, 33.22f, 101.2f };
-        const auto int_batch = chowdsp::xsimd_cast<int32_t> (x);
-        REQUIRE (int_batch.get (0) == -23);
-        REQUIRE (int_batch.get (1) == 0);
-        REQUIRE (int_batch.get (2) == 33);
-        REQUIRE (int_batch.get (3) == 101);
-    }
-
-    SECTION ("Int32 to Float")
-    {
-        xsimd::batch<int32_t> x { -23, 0, 33, 101 };
-        const auto float_batch = chowdsp::xsimd_cast<float> (x);
-        REQUIRE (float_batch.get (0) == -23.0f);
-        REQUIRE (float_batch.get (1) == 0.0f);
-        REQUIRE (float_batch.get (2) == 33.0f);
-        REQUIRE (float_batch.get (3) == 101.0f);
-    }
-
-    SECTION ("Double to Int64")
-    {
-        {
-            xsimd::batch<double> x { -23.1, 0.0 };
-            const auto int_batch = chowdsp::xsimd_cast<int64_t> (x);
-            REQUIRE (int_batch.get (0) == -23);
-            REQUIRE (int_batch.get (1) == 0);
-        }
-        {
-            xsimd::batch<double> x { 33.22, 101.2 };
-            const auto int_batch = chowdsp::xsimd_cast<int64_t> (x);
-            REQUIRE (int_batch.get (0) == 33);
-            REQUIRE (int_batch.get (1) == 101);
-        }
-    }
-
-    SECTION ("Int64 to Double")
-    {
-        {
-            xsimd::batch<int64_t> x { -23, 0 };
-            const auto double_batch = chowdsp::xsimd_cast<double> (x);
-            REQUIRE (double_batch.get (0) == -23.0);
-            REQUIRE (double_batch.get (1) == 0.0);
-        }
-        {
-            xsimd::batch<int64_t> x { 33, 101 };
-            const auto double_batch = chowdsp::xsimd_cast<double> (x);
-            REQUIRE (double_batch.get (0) == 33.0);
-            REQUIRE (double_batch.get (1) == 101.0);
-        }
-    }
-}
-#endif
-
-#if CHOWDSP_WDF_TEST_WITH_XSIMD
 TEMPLATE_TEST_CASE ("Omega Test", "", float, double, xsimd::batch<float>, xsimd::batch<double>)
 #else
 TEMPLATE_TEST_CASE ("Omega Test", "", float, double)

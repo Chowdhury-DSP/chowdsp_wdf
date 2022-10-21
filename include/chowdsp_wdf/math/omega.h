@@ -139,7 +139,7 @@ namespace Omega
         } v;
         v.f = x;
         xsimd::batch<int32_t> ex = v.i & 0x7f800000;
-        xsimd::batch<float> e = xsimd_cast<float> ((ex >> 23) - 127);
+        xsimd::batch<float> e = xsimd::to_float ((ex >> 23) - 127);
         v.i = (v.i - ex) | 0x3f800000;
 
         return 0.693147180559945f * (log2_approx<float> (v.f) + e);
@@ -156,7 +156,7 @@ namespace Omega
         } v {};
         v.d = x;
         xsimd::batch<int64_t> ex = v.i & 0x7ff0000000000000;
-        xsimd::batch<double> e = xsimd_cast<double> ((ex >> 53) - 510);
+        xsimd::batch<double> e = xsimd::to_float ((ex >> 53) - 510);
         v.i = (v.i - ex) | 0x3ff0000000000000;
 
         return 0.693147180559945 * (e + log2_approx<double> (v.d));
@@ -245,9 +245,9 @@ namespace Omega
             xsimd::batch<float> f;
         } v {};
 
-        auto xi = xsimd_cast<int32_t> (x);
+        auto xi = xsimd::to_int (x);
         xsimd::batch<int32_t> l = xsimd::select (xi < 0, xi - 1, xi);
-        xsimd::batch<float> f = x - xsimd_cast<float> (l);
+        xsimd::batch<float> f = x - xsimd::to_float (l);
         v.i = (l + 127) << 23;
 
         return v.f * pow2_approx<float> (f);
@@ -265,9 +265,9 @@ namespace Omega
             xsimd::batch<double> d;
         } v {};
 
-        auto xi = xsimd_cast<int64_t> (x);
+        auto xi = xsimd::to_int (x);
         xsimd::batch<int64_t> l = xsimd::select (xi < 0, xi - 1, xi);
-        xsimd::batch<double> d = x - xsimd_cast<double> (l);
+        xsimd::batch<double> d = x - xsimd::to_float (l);
         v.i = (l + 1023) << 52;
 
         return v.d * pow2_approx<double> (d);
