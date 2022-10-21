@@ -97,7 +97,7 @@ struct RCLowpass {
     wdft::CapacitorT<FloatType> c1 { 1.0e-6 };   // 1 uF capacitor
     
     wdft::WDFSeriesT<FloatType, decltype (r1), decltype (c1)> s1 { r1, c1 };   // series connection of r1 and c1
-    wdft::PolarityInverterT<float, decltype(s1)> i1 { s1 };                    // invert polarity
+    wdft::PolarityInverterT<FloatType, decltype(s1)> i1 { s1 };                // invert polarity
     wdft::IdealVoltageSourceT<FloatType, decltype (s1)> vs { s1 };             // input voltage source
     
     // prepare the WDF model here...
