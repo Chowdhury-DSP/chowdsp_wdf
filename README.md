@@ -1,6 +1,7 @@
 [![CI](https://github.com/Chowdhury-DSP/chowdsp_wdf/actions/workflows/test.yml/badge.svg)](https://github.com/Chowdhury-DSP/chowdsp_wdf/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/License-BSD-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![codecov](https://codecov.io/gh/Chowdhury-DSP/chowdsp_wdf/branch/main/graph/badge.svg?token=DR1OKVN2KJ)](https://codecov.io/gh/Chowdhury-DSP/chowdsp_wdf)
+[![arXiv](https://img.shields.io/badge/arXiv-2210.12554-b31b1b.svg)](https://arxiv.org/abs/2210.12554)
 
 # Wave Digital Filters
 
@@ -120,6 +121,20 @@ RCLowpass<xsimd::batch<double>> myFilter; // instantiate the WDF to process an X
 ```
 
 If you are using `chowdsp_wdf` with XSIMD, please remember to abide by the XSIMD license.
+
+## Citation
+
+If you are using `chowdsp_wdf` as part of an academic work, please cite the library as follows:
+```
+@article{chowdhury2022chowdspwdf,
+        title = {chowdsp_wdf: An Advanced C++ Library for Wave Digital Circuit Modelling},
+        author = {Chowdhury, Jatin},
+        year = {2022},
+        journal={arXiv preprint arXiv:2210.12554}
+        doi = {10.48550/ARXIV.2210.12554},
+        url = {https://arxiv.org/abs/2210.12554},
+}
+```
 
 ## Resources
 
