@@ -60,8 +60,10 @@ namespace wdft
         template <typename ElementType, int arraySize, int alignment = CHOWDSP_WDF_DEFAULT_SIMD_ALIGNMENT>
         struct AlignedArray
         {
-            ElementType& operator[] (int index) noexcept { return array[index]; }
-            const ElementType& operator[] (int index) const noexcept { return array[index]; }
+            template <typename IntType>
+            ElementType& operator[] (IntType index) noexcept { return array[index]; }
+            template <typename IntType>
+            const ElementType& operator[] (IntType index) const noexcept { return array[index]; }
 
             ElementType* data() noexcept { return array; }
             const ElementType* data() const noexcept { return array; }
