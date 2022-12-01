@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Chowdhury
+    given-names: Jatin
+    orcid: https://orcid.org/0000-0001-6033-465X
+    email: jatin@ccrma.stanford.edu
+title: "chowdsp_wdf: An Advanced C++ Library for Wave Digital Circuit Modelling"
+license: BSD 3-Clause
+repository-code: "https://github.com/Chowdhury-DSP/chowdsp_wdf"
+url: https://ccrma.stanford.edu/~jatin/chowdsp/chowdsp_wdf/
