@@ -2,6 +2,7 @@
 [![License](https://img.shields.io/badge/License-BSD-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![codecov](https://codecov.io/gh/Chowdhury-DSP/chowdsp_wdf/branch/main/graph/badge.svg?token=DR1OKVN2KJ)](https://codecov.io/gh/Chowdhury-DSP/chowdsp_wdf)
 [![arXiv](https://img.shields.io/badge/arXiv-2210.12554-b31b1b.svg)](https://arxiv.org/abs/2210.12554)
+[![Try it on godbolt online](https://img.shields.io/badge/on-godbolt-blue.svg)](https://godbolt.org/z/6veooxjfn)
 
 # Wave Digital Filters
 

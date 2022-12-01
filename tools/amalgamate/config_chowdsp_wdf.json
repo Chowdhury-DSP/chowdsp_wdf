@@ -1,0 +1,8 @@
+{
+  "project": "chowdsp_wdf",
+  "target": "single_include/chowdsp_wdf/chowdsp_wdf.h",
+  "sources": [
+    "include/chowdsp_wdf/chowdsp_wdf.h"
+  ],
+  "include_paths": ["include"]
+}
