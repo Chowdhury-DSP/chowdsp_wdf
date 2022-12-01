@@ -61,9 +61,15 @@ namespace wdft
         struct AlignedArray
         {
             template <typename IntType>
-            ElementType& operator[] (IntType index) noexcept { return array[index]; }
+            ElementType& operator[] (IntType index) noexcept
+            {
+                return array[index];
+            }
             template <typename IntType>
-            const ElementType& operator[] (IntType index) const noexcept { return array[index]; }
+            const ElementType& operator[] (IntType index) const noexcept
+            {
+                return array[index];
+            }
 
             ElementType* data() noexcept { return array; }
             const ElementType* data() const noexcept { return array; }
