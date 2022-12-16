@@ -162,7 +162,7 @@ namespace wdf
         template <typename ElementType>
         struct AlignedArray
         {
-            explicit AlignedArray (size_t size) : m_size (size),
+            explicit AlignedArray (size_t size) : m_size ((int) size),
                                                   vector (array_pad<ElementType> (size), ElementType {})
             {
             }
