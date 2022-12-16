@@ -1,3 +1,4 @@
+#include <limits>
 #include <benchmark/benchmark.h>
 
 #if CHOWDSP_WDF_TEST_WITH_XSIMD
