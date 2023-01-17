@@ -32,7 +32,7 @@ namespace wdft
         /** Propogates a reflected wave from a WDF ideal voltage source. */
         inline T reflected() noexcept
         {
-            wdf.b = (T) 0 - wdf.a + (T) 2.0 * Vs;
+            wdf.b = -wdf.a + (T) 2.0 * Vs;
             return wdf.b;
         }
 
