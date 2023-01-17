@@ -49,7 +49,7 @@ namespace wdft
             port2.reflected();
 
             bDiff = port2.wdf.b - port1.wdf.b;
-            bTemp = (T) 0 - port1Reflect * bDiff;
+            bTemp = -port1Reflect * bDiff;
             wdf.b = port2.wdf.b + bTemp;
 
             return wdf.b;
@@ -96,7 +96,7 @@ namespace wdft
         {
             auto b1 = port1.wdf.b - port1Reflect * (x + port1.wdf.b + port2.wdf.b);
             port1.incident (b1);
-            port2.incident ((T) 0 - (x + b1));
+            port2.incident (-(x + b1));
 
             wdf.a = x;
         }
@@ -104,7 +104,7 @@ namespace wdft
         /** Propogates a reflected wave from a WDF series adaptor. */
         inline T reflected() noexcept
         {
-            wdf.b = (T) 0 - (port1.reflected() + port2.reflected());
+            wdf.b = -(port1.reflected() + port2.reflected());
             return wdf.b;
         }
 
@@ -142,13 +142,13 @@ namespace wdft
         inline void incident (T x) noexcept
         {
             wdf.a = x;
-            port1.incident ((T) 0 - x);
+            port1.incident (-x);
         }
 
         /** Propogates a reflected wave from a WDF inverter. */
         inline T reflected() noexcept
         {
-            wdf.b = (T) 0 - port1.reflected();
+            wdf.b = -port1.reflected();
             return wdf.b;
         }
 
