@@ -8,6 +8,7 @@ target_sources(chowdsp_wdf_tests
         OmegaTest.cpp
         RTypeTest.cpp
         SIMDTest.cpp
+        CombinedComponentTest.cpp
         TestRunner.cpp
 )
 
