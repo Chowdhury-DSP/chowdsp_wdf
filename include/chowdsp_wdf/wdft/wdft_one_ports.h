@@ -391,7 +391,7 @@ namespace wdft
     class ResistorCapacitorSeriesT final : public BaseWDF
     {
     public:
-        /** Creates a new WDF Capacitor.
+        /** Creates a new WDF Resistor/Capacitor Series.
          * @param cap_value: Resistance value in Ohms
          * @param res_value: Capacitance value in Farads
          * @param fs: WDF sample rate
@@ -479,7 +479,7 @@ namespace wdft
     class ResistorCapacitorParallelT final : public BaseWDF
     {
     public:
-        /** Creates a new WDF Capacitor.
+        /** Creates a new WDF Resistor/Capacitor Parallel.
          * @param res_value: Resistance value in Ohms
          * @param cap_value: Capacitance value in Farads
          * @param fs: WDF sample rate

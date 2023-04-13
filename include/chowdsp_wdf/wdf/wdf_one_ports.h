@@ -180,6 +180,90 @@ namespace wdf
             this->propagateImpedance();
         }
     };
+
+    /** WDF Resistor/Capacitor Series Node */
+    template <typename T>
+    class ResistorCapacitorSeries final : public WDFWrapper<T, wdft::ResistorCapacitorSeriesT<T>>
+    {
+    public:
+        /** Creates a new WDF Resistor/Capacitor Series node.
+         * @param res_value: resistance in Ohms
+         * @param cap_value: capacitance in Farads
+         */
+        explicit ResistorCapacitorSeries (T res_value, T cap_value)
+            : WDFWrapper<T, wdft::ResistorCapacitorSeriesT<T>> ("Resistor/Capacitor Series", res_value, cap_value)
+        {
+        }
+
+        /** Sets the resistance value of the WDF resistor, in Ohms. */
+        void setResistanceValue (T newR)
+        {
+            this->internalWDF.setResistanceValue (newR);
+            this->propagateImpedance();
+        }
+
+        /** Sets the capacitance value of the WDF capacitor, in Farads. */
+        void setCapacitanceValue (T newC)
+        {
+            this->internalWDF.setCapacitanceValue (newC);
+            this->propagateImpedance();
+        }
+
+        /** Prepares the capacitor to operate at a new sample rate */
+        void prepare (T sampleRate)
+        {
+            this->internalWDF.prepare (sampleRate);
+            this->propagateImpedance();
+        }
+
+        /** Resets the capacitor state */
+        void reset()
+        {
+            this->internalWDF.reset();
+        }
+    };
+
+    /** WDF Resistor/Capacitor Parallel Node */
+    template <typename T>
+    class ResistorCapacitorParallel final : public WDFWrapper<T, wdft::ResistorCapacitorParallelT<T>>
+    {
+    public:
+        /** Creates a new WDF Resistor/Capacitor Parallel node.
+         * @param res_value: resistance in Ohms
+         * @param cap_value: capacitance in Farads
+         */
+        explicit ResistorCapacitorParallel (T res_value, T cap_value)
+            : WDFWrapper<T, wdft::ResistorCapacitorParallelT<T>> ("Resistor/Capacitor Parallel", res_value, cap_value)
+        {
+        }
+
+        /** Sets the resistance value of the WDF resistor, in Ohms. */
+        void setResistanceValue (T newR)
+        {
+            this->internalWDF.setResistanceValue (newR);
+            this->propagateImpedance();
+        }
+
+        /** Sets the capacitance value of the WDF capacitor, in Farads. */
+        void setCapacitanceValue (T newC)
+        {
+            this->internalWDF.setCapacitanceValue (newC);
+            this->propagateImpedance();
+        }
+
+        /** Prepares the capacitor to operate at a new sample rate */
+        void prepare (T sampleRate)
+        {
+            this->internalWDF.prepare (sampleRate);
+            this->propagateImpedance();
+        }
+
+        /** Resets the capacitor state */
+        void reset()
+        {
+            this->internalWDF.reset();
+        }
+    };
 } // namespace wdf
 } // namespace chowdsp
 
