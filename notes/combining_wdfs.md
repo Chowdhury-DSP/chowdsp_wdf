@@ -112,20 +112,32 @@ a_c = a_c[n-1] - R_i (a_0 + a_c[n-1]) \\
 a_r = -(a_0 + a_c)
 $$
 
-We no longer need $a_r$, and we can rename $a_c$ to $z$.
+We no longer need $a_r$, and we can rename $a_c$ to $z$
+(since that's essentially the "state" for this one-port).
 We can also just use $b$ and $a$ instead of $b_0$ and $a_0$.
 $$
 b_0 = -z[n-1] \\
 z = z[n-1] - R_i (a_0 + z[n-1])
 $$
 
+So what's the advantage here? The series adaptor
+needs roughly 7 additions/subtractions and 1 multiply.
+The combined element needs only 3 additions/subtractions
+(and still the 1 multiply), but we've also removed a
+layer of complexity that we were hoping the compiler
+would optimize through. This results in better generated
+assembly (TODO: share my local Godbolt example), and
+probably faster compile times as well. For WDF trees that
+are very deep, simplifying these elements also makes it
+less likely that the compiler will "give up" part-way
+through the optimizing process because of time/memory
+constraints.
+
 ## Resistor-Capacitor Parallel:
 
 ### Underlying Components:
 
-Now we can do the same thing, starting with a 3-port
-parallel adaptor:
-
+The 3-port parallel adaptor is defined:
 $$
 G_p = G_1 + G_2 \\
 b_0 = \frac{G_1}{G_p} a_1 + \frac{G_2}{G_p} a_2 \\
@@ -135,7 +147,7 @@ $$
 
 Again, we find a simple relationship between $b_1$ and $b_2$:
 $$
-b_{diff} = a_2 - a_1 \\
+b_{diff} := a_2 - a_1 \\
 b_1 = a_0 + \frac{G_2}{G_p} b_{diff} \\
 b_2 = a_0 - \frac{G_1}{G_p} b_{diff} \\
 b_1 - b_2 = \frac{G_2}{G_p} b_{diff}+\frac{G_1}{G_p} b_{diff}\\
@@ -169,7 +181,7 @@ at port (1), and resistor at port (2):
 
 $$
 G_p = \frac{2C}{T} + \frac{1}{R} \\
-G_i = \frac{2 C R}{2 C R + T} \\
+G_i = \frac{\frac{2C}{T}}{G_p} = \frac{2 C R}{2 C R + T} \\
 b_{diff} = b_r - b_c \\
 b_0 = b_r - G_i b_{diff} \\
 b_1 = b_2 + b_{diff} \\
@@ -189,6 +201,10 @@ $$
 b_0 = G_i a_c[n-1] \\
 a_c = a_r - a_c[n-1] \\
 a_r = b_0 + a_0 \\
+$$
+
+Substituing in for $a_r$, we get:
+$$
 a_c = b_0 + a_0 - a_c[n-1]
 $$
 
@@ -198,7 +214,7 @@ b = G_i z \\
 z = b + a - z[n-1]
 $$
 
-## Resistive Voltage Source + Capacitor (Series)
+## Resistive Voltage Source + Capacitor (in Series)
 
 ### Underlying Components:
 
@@ -228,10 +244,11 @@ a_c = a_c[n-1] - R_i (a_0 + a_c[n-1] + V)
 $$
 
 Note that as with the previous series combination,
-we can ignore the $a_r$ term. We can simplify $a_c$
-a little bit more:
+we can basically ignore the $a_r$ term. We can simplify
+$a_c$ a little bit more by subbing in the definition of
+$b_0$:
 $$
-a_c = a_c[n-1] - R_i (a_0 - b)
+a_c = a_c[n-1] - R_i (a_0 - b_0)
 $$
 
 In final form:
