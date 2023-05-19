@@ -417,6 +417,8 @@ namespace wdft
         void reset()
         {
             z = (T) 0.0;
+            wdf.a = (T) 0;
+            wdf.b = (T) 0;
         }
 
         /** Sets the resistance value of the WDF resistor, in Ohms. */
@@ -505,6 +507,8 @@ namespace wdft
         void reset()
         {
             z = (T) 0.0;
+            wdf.a = (T) 0;
+            wdf.b = (T) 0;
         }
 
         /** Sets the resistance value of the WDF resistor, in Ohms. */
