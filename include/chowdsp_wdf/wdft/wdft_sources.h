@@ -268,12 +268,12 @@ namespace wdft
         inline void incident (T x) noexcept
         {
             wdf.a = x;
+            z -= T_over_2RC * (wdf.a - wdf.b);
         }
 
         /** Propogates a reflected wave from the WDF. */
         inline T reflected() noexcept
         {
-            z -= T_over_2RC * (wdf.a - wdf.b);
             wdf.b = -(z + Vs);
             return wdf.b;
         }

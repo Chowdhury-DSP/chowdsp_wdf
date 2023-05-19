@@ -453,13 +453,13 @@ namespace wdft
         inline void incident (T x) noexcept
         {
             wdf.a = x;
-            z = wdf.a;
+            z -= T_over_T_plus_2RC * (wdf.a + z);
         }
 
         /** Propogates a reflected wave from the WDF. */
         inline T reflected() noexcept
         {
-            wdf.b += T_over_T_plus_2RC * (z - wdf.b);
+            wdf.b = -z;
             return wdf.b;
         }
 
@@ -544,13 +544,13 @@ namespace wdft
         inline void incident (T x) noexcept
         {
             wdf.a = x;
-            z = wdf.a;
+            z = wdf.b + wdf.a - z;
         }
 
         /** Propogates a reflected wave from the WDF. */
         inline T reflected() noexcept
         {
-            wdf.b = twoRC_over_twoRC_plus_T * (wdf.b + z) - wdf.b;
+            wdf.b = twoRC_over_twoRC_plus_T * z;
             return wdf.b;
         }
 
