@@ -36,9 +36,10 @@ namespace wdft
         /** Accepts an incident wave into a WDF parallel adaptor. */
         inline void incident (T x) noexcept
         {
-            auto b2 = x + bTemp;
-            port1.incident (bDiff + b2);
+            const auto b2 = wdf.b - port2.wdf.b + x;
+            port1.incident (b2 + bDiff);
             port2.incident (b2);
+
             wdf.a = x;
         }
 
@@ -49,8 +50,7 @@ namespace wdft
             port2.reflected();
 
             bDiff = port2.wdf.b - port1.wdf.b;
-            bTemp = -port1Reflect * bDiff;
-            wdf.b = port2.wdf.b + bTemp;
+            wdf.b = port2.wdf.b - port1Reflect * bDiff;
 
             return wdf.b;
         }
@@ -62,8 +62,6 @@ namespace wdft
 
     private:
         T port1Reflect = (T) 1.0;
-
-        T bTemp = (T) 0.0;
         T bDiff = (T) 0.0;
     };
 
@@ -94,7 +92,7 @@ namespace wdft
         /** Accepts an incident wave into a WDF series adaptor. */
         inline void incident (T x) noexcept
         {
-            auto b1 = port1.wdf.b - port1Reflect * (x + port1.wdf.b + port2.wdf.b);
+            const auto b1 = port1.wdf.b - port1Reflect * (x + port1.wdf.b + port2.wdf.b);
             port1.incident (b1);
             port2.incident (-(x + b1));
 
