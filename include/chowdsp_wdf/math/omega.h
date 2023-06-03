@@ -26,6 +26,7 @@
 #define OMEGA_H_INCLUDED
 
 #include <algorithm>
+#include <cstdint>
 #include "sample_type.h"
 
 namespace chowdsp
@@ -216,7 +217,7 @@ namespace Omega
     template <>
     CHOWDSP_WDF_MAYBE_UNUSED constexpr double exp_approx (double x)
     {
-        x = std::max (-126.0, 1.442695040888963 * x);
+        x = std::max ((double) -126.0, 1.442695040888963 * x);
 
         union
         {
