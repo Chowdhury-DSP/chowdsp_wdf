@@ -97,6 +97,91 @@ namespace wdft
         T R_value = (T) 1.0e-9;
     };
 
+    /** WDF Voltage source with series capacitance */
+    template <typename T>
+    class CapacitiveVoltageSourceT final : public BaseWDF
+    {
+    public:
+        /** Creates a new resistive voltage source.
+         * @param value: initial resistance value, in Ohms
+         */
+        explicit CapacitiveVoltageSourceT (T value = NumericType<T> (1.0e-6), T fs = (T) 48000)
+            : C_value (value),
+              fs (fs)
+
+        {
+            calcImpedance();
+        }
+
+        /** Prepares the capacitor to operate at a new sample rate */
+        void prepare (T sampleRate)
+        {
+            fs = sampleRate;
+            propagateImpedanceChange();
+
+            reset();
+        }
+
+        void reset()
+        {
+            z = (T) 0;
+            v_1 = (T) 0;
+        }
+
+        /** Sets the capacitance value of the series resistor, in Farads. */
+        void setCapacitanceValue (T newC)
+        {
+            if (newC == C_value)
+                return;
+
+            C_value = newC;
+            propagateImpedanceChange();
+        }
+
+        /** Computes the impedance of the WDF capacitor,
+         *             1
+         * Z_C = --------------
+         *        2 * f_s * C
+         */
+        inline void calcImpedance() override
+        {
+            wdf.R = (T) 1.0 / ((T) 2.0 * C_value * fs);
+            wdf.G = (T) 1.0 / wdf.R;
+        }
+
+        /** Sets the voltage of the voltage source, in Volts */
+        void setVoltage (T newV)
+        {
+            v_0 = newV;
+        }
+
+        /** Accepts an incident wave into a WDF resistive voltage source. */
+        inline void incident (T x) noexcept
+        {
+            wdf.a = x;
+            z = wdf.a;
+        }
+
+        /** Propogates a reflected wave from a WDF resistive voltage source. */
+        inline T reflected() noexcept
+        {
+            wdf.b = z + v_0 - v_1;
+            v_1 = v_0;
+            return wdf.b;
+        }
+
+        WDFMembers<T> wdf;
+
+    private:
+        T C_value = (T) 1.0e-6;
+
+        T z {};
+        T v_0 {};
+        T v_1 {};
+
+        T fs;
+    };
+
     /** WDF Current source (non-adaptable) */
     template <typename T, typename Next>
     class IdealCurrentSourceT final : public RootWDF
