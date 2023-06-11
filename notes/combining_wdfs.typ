@@ -253,3 +253,51 @@ $
 b_0 = -z[n-1] - V \
 z = z[n-1] - R_i (a_0 - b_0)
 $
+
+= Capacitive Voltage Source (Series)
+
+Let's start with the Kirchoff domain definition
+for a Resistive Voltage Source:
+$ v(t) - e(t) = i(t) R $
+
+Now we replace the resistor term with a capacitor,
+and switch to the $s$-domain:
+$ V(s) - E(s) = I(s) / (C s) $
+
+And then moving to the wave domain:
+$ 1/2 (A(s) + B(s)) - E(s) = 1/(2 R_0) (A(s) - B(s))/(C s) $
+$ R_0 C s (A (s) + B(s)) - 2 R_0 C s E(s) = A(s) - B(s) $
+$ B(s) (R_0 C s + 1) = A(s) (1 - R_0 C s) + 2 R_0 C s E(s) $
+$ B(s) = A(s) (1 - R_0 C s)/(1 + R_0 C s)
+       + E(s) (2 R_0 C s)/(1 + R_0 C s) $
+
+Now we apply the bilinear transform: $s -> 2/T (1 - z^(-1))/(1 + z^(-1))$:
+$
+B(z) = A(z) (1 - R_0 C 2/T (1 - z^(-1))
+     / (1 + z^(-1)))/(1 + R_0 C 2/T (1 - z^(-1))/(1 + z^(-1)))
+     + E(z) (2 R_0 C 2/T (1 - z^(-1))/(1 + z^(-1)))
+     / (1 + R_0 C 2/T (1 - z^(-1))/(1 + z^(-1)))
+$
+
+Multiplying through by $(T (1 + z^(-1)))/(T (1 + z^(-1)))$:
+$
+B(z) = A(z) (T (1 + z^(-1)) - 2 R_0 C (1 - z^(-1)))
+     / (T (1 + z^(-1)) + 2 R_0 C (1 - z^(-1)))
+     + E(z) (4 R_0 C (1 - z^(-1)))
+     / (T (1 + z^(-1)) + 2 R_0 C (1 - z^(-1)))
+$
+$
+B(z) = A(z) ((T - 2 R_0 C) + (T + 2 R_0 C)z^(-1))
+     / ((T + 2 R_0 C) + (T - 2 R_0 C)z^(-1))
+     + E(z) (4 R_0 C - 4 R_0 C z^(-1))
+     / ((T + 2 R_0 C) + (T - 2 R_0 C)z^(-1))
+$
+
+Now we can adapt the port by setting $R_0 = T/(2 C)$ (note 
+that this is the same port impedance as a singular capacitor).
+We can then simplify $2 R_0 C -> T$
+$ B(z) = A(z) (2 T z^(-1))/(2 T) + E(z) (2 - 2 z^(-1))/(2T) $
+$ B(z) = A(z) z^(-1) + E(z) (1 - z^(-1)) $
+
+Applying the inverse $z$-transform:
+$ b[n] = a[n-1] + e[n] - e[n-1] $
