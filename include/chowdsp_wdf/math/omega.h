@@ -323,6 +323,14 @@ namespace Omega
         return y - (y - exp_approx<T> (x - y)) / (y + (T) 1);
     }
 
+    struct Omega
+    {
+        template <typename T>
+        static T omega (T x)
+        {
+            return omega4 (x);
+        }
+    };
 } // namespace Omega
 } // namespace chowdsp
 
