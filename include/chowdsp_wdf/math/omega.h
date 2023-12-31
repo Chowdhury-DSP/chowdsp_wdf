@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstddef>
 #include "sample_type.h"
 
 namespace chowdsp

@@ -835,6 +835,91 @@ namespace wdft
         T R_value = (T) 1.0e-9;
     };
 
+    /** WDF Voltage source with series capacitance */
+    template <typename T>
+    class CapacitiveVoltageSourceT final : public BaseWDF
+    {
+    public:
+        /** Creates a new resistive voltage source.
+         * @param value: initial resistance value, in Ohms
+         */
+        explicit CapacitiveVoltageSourceT (T value = NumericType<T> (1.0e-6), T fs = (T) 48000)
+            : C_value (value),
+              fs (fs)
+
+        {
+            calcImpedance();
+        }
+
+        /** Prepares the capacitor to operate at a new sample rate */
+        void prepare (T sampleRate)
+        {
+            fs = sampleRate;
+            propagateImpedanceChange();
+
+            reset();
+        }
+
+        void reset()
+        {
+            z = (T) 0;
+            v_1 = (T) 0;
+        }
+
+        /** Sets the capacitance value of the series resistor, in Farads. */
+        void setCapacitanceValue (T newC)
+        {
+            if (newC == C_value)
+                return;
+
+            C_value = newC;
+            propagateImpedanceChange();
+        }
+
+        /** Computes the impedance of the WDF capacitor,
+         *             1
+         * Z_C = --------------
+         *        2 * f_s * C
+         */
+        inline void calcImpedance() override
+        {
+            wdf.R = (T) 1.0 / ((T) 2.0 * C_value * fs);
+            wdf.G = (T) 1.0 / wdf.R;
+        }
+
+        /** Sets the voltage of the voltage source, in Volts */
+        void setVoltage (T newV)
+        {
+            v_0 = newV;
+        }
+
+        /** Accepts an incident wave into a WDF resistive voltage source. */
+        inline void incident (T x) noexcept
+        {
+            wdf.a = x;
+            z = wdf.a;
+        }
+
+        /** Propogates a reflected wave from a WDF resistive voltage source. */
+        inline T reflected() noexcept
+        {
+            wdf.b = z + v_0 - v_1;
+            v_1 = v_0;
+            return wdf.b;
+        }
+
+        WDFMembers<T> wdf;
+
+    private:
+        T C_value = (T) 1.0e-6;
+
+        T z {};
+        T v_0 {};
+        T v_1 {};
+
+        T fs;
+    };
+
     /** WDF Current source (non-adaptable) */
     template <typename T, typename Next>
     class IdealCurrentSourceT final : public RootWDF
@@ -1348,6 +1433,8 @@ namespace signum
 #define OMEGA_H_INCLUDED
 
 #include <algorithm>
+#include <cstdint>
+#include <cstddef>
 // #include "sample_type.h"
 
 
@@ -1539,7 +1626,7 @@ namespace Omega
     template <>
     CHOWDSP_WDF_MAYBE_UNUSED constexpr double exp_approx (double x)
     {
-        x = std::max (-126.0, 1.442695040888963 * x);
+        x = std::max ((double) -126.0, 1.442695040888963 * x);
 
         union
         {
@@ -1645,6 +1732,14 @@ namespace Omega
         return y - (y - exp_approx<T> (x - y)) / (y + (T) 1);
     }
 
+    struct Omega
+    {
+        template <typename T>
+        static T omega (T x)
+        {
+            return omega4 (x);
+        }
+    };
 } // namespace Omega
 } // namespace chowdsp
 
@@ -1667,7 +1762,7 @@ namespace wdft
      * See Werner et al., "An Improved and Generalized Diode Clipper Model for Wave Digital Filters"
      * https://www.researchgate.net/publication/299514713_An_Improved_and_Generalized_Diode_Clipper_Model_for_Wave_Digital_Filters
      */
-    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best>
+    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best, typename OmegaProvider = Omega::Omega>
     class DiodePairT final : public RootWDF
     {
     public:
@@ -1729,7 +1824,7 @@ namespace wdft
         {
             // See eqn (18) from reference paper
             T lambda = (T) signum::signum (wdf.a);
-            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * Omega::omega4 (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
+            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * OmegaProvider::omega (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
         }
 
         /** Implementation for float/double (Best). */
@@ -1761,7 +1856,7 @@ namespace wdft
      * See Werner et al., "An Improved and Generalized Diode Clipper Model for Wave Digital Filters"
      * https://www.researchgate.net/publication/299514713_An_Improved_and_Generalized_Diode_Clipper_Model_for_Wave_Digital_Filters
      */
-    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best>
+    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best, typename OmegaProvider = Omega::Omega>
     class DiodeT final : public RootWDF
     {
     public:
@@ -1810,7 +1905,7 @@ namespace wdft
         inline T reflected() noexcept
         {
             // See eqn (10) from reference paper
-            wdf.b = wdf.a + twoR_Is - twoVt * Omega::omega4 (logR_Is_overVt + wdf.a * oneOverVt + R_Is_overVt);
+            wdf.b = wdf.a + twoR_Is - twoVt * OmegaProvider::omega (logR_Is_overVt + wdf.a * oneOverVt + R_Is_overVt);
             return wdf.b;
         }
 
@@ -2711,6 +2806,91 @@ namespace wdft
         T R_value = (T) 1.0e-9;
     };
 
+    /** WDF Voltage source with series capacitance */
+    template <typename T>
+    class CapacitiveVoltageSourceT final : public BaseWDF
+    {
+    public:
+        /** Creates a new resistive voltage source.
+         * @param value: initial resistance value, in Ohms
+         */
+        explicit CapacitiveVoltageSourceT (T value = NumericType<T> (1.0e-6), T fs = (T) 48000)
+            : C_value (value),
+              fs (fs)
+
+        {
+            calcImpedance();
+        }
+
+        /** Prepares the capacitor to operate at a new sample rate */
+        void prepare (T sampleRate)
+        {
+            fs = sampleRate;
+            propagateImpedanceChange();
+
+            reset();
+        }
+
+        void reset()
+        {
+            z = (T) 0;
+            v_1 = (T) 0;
+        }
+
+        /** Sets the capacitance value of the series resistor, in Farads. */
+        void setCapacitanceValue (T newC)
+        {
+            if (newC == C_value)
+                return;
+
+            C_value = newC;
+            propagateImpedanceChange();
+        }
+
+        /** Computes the impedance of the WDF capacitor,
+         *             1
+         * Z_C = --------------
+         *        2 * f_s * C
+         */
+        inline void calcImpedance() override
+        {
+            wdf.R = (T) 1.0 / ((T) 2.0 * C_value * fs);
+            wdf.G = (T) 1.0 / wdf.R;
+        }
+
+        /** Sets the voltage of the voltage source, in Volts */
+        void setVoltage (T newV)
+        {
+            v_0 = newV;
+        }
+
+        /** Accepts an incident wave into a WDF resistive voltage source. */
+        inline void incident (T x) noexcept
+        {
+            wdf.a = x;
+            z = wdf.a;
+        }
+
+        /** Propogates a reflected wave from a WDF resistive voltage source. */
+        inline T reflected() noexcept
+        {
+            wdf.b = z + v_0 - v_1;
+            v_1 = v_0;
+            return wdf.b;
+        }
+
+        WDFMembers<T> wdf;
+
+    private:
+        T C_value = (T) 1.0e-6;
+
+        T z {};
+        T v_0 {};
+        T v_1 {};
+
+        T fs;
+    };
+
     /** WDF Current source (non-adaptable) */
     template <typename T, typename Next>
     class IdealCurrentSourceT final : public RootWDF
@@ -3224,6 +3404,8 @@ namespace signum
 #define OMEGA_H_INCLUDED
 
 #include <algorithm>
+#include <cstdint>
+#include <cstddef>
 // #include "sample_type.h"
 
 
@@ -3415,7 +3597,7 @@ namespace Omega
     template <>
     CHOWDSP_WDF_MAYBE_UNUSED constexpr double exp_approx (double x)
     {
-        x = std::max (-126.0, 1.442695040888963 * x);
+        x = std::max ((double) -126.0, 1.442695040888963 * x);
 
         union
         {
@@ -3521,6 +3703,14 @@ namespace Omega
         return y - (y - exp_approx<T> (x - y)) / (y + (T) 1);
     }
 
+    struct Omega
+    {
+        template <typename T>
+        static T omega (T x)
+        {
+            return omega4 (x);
+        }
+    };
 } // namespace Omega
 } // namespace chowdsp
 
@@ -3543,7 +3733,7 @@ namespace wdft
      * See Werner et al., "An Improved and Generalized Diode Clipper Model for Wave Digital Filters"
      * https://www.researchgate.net/publication/299514713_An_Improved_and_Generalized_Diode_Clipper_Model_for_Wave_Digital_Filters
      */
-    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best>
+    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best, typename OmegaProvider = Omega::Omega>
     class DiodePairT final : public RootWDF
     {
     public:
@@ -3605,7 +3795,7 @@ namespace wdft
         {
             // See eqn (18) from reference paper
             T lambda = (T) signum::signum (wdf.a);
-            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * Omega::omega4 (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
+            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * OmegaProvider::omega (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
         }
 
         /** Implementation for float/double (Best). */
@@ -3637,7 +3827,7 @@ namespace wdft
      * See Werner et al., "An Improved and Generalized Diode Clipper Model for Wave Digital Filters"
      * https://www.researchgate.net/publication/299514713_An_Improved_and_Generalized_Diode_Clipper_Model_for_Wave_Digital_Filters
      */
-    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best>
+    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best, typename OmegaProvider = Omega::Omega>
     class DiodeT final : public RootWDF
     {
     public:
@@ -3686,7 +3876,7 @@ namespace wdft
         inline T reflected() noexcept
         {
             // See eqn (10) from reference paper
-            wdf.b = wdf.a + twoR_Is - twoVt * Omega::omega4 (logR_Is_overVt + wdf.a * oneOverVt + R_Is_overVt);
+            wdf.b = wdf.a + twoR_Is - twoVt * OmegaProvider::omega (logR_Is_overVt + wdf.a * oneOverVt + R_Is_overVt);
             return wdf.b;
         }
 
@@ -5866,6 +6056,91 @@ namespace wdft
         T R_value = (T) 1.0e-9;
     };
 
+    /** WDF Voltage source with series capacitance */
+    template <typename T>
+    class CapacitiveVoltageSourceT final : public BaseWDF
+    {
+    public:
+        /** Creates a new resistive voltage source.
+         * @param value: initial resistance value, in Ohms
+         */
+        explicit CapacitiveVoltageSourceT (T value = NumericType<T> (1.0e-6), T fs = (T) 48000)
+            : C_value (value),
+              fs (fs)
+
+        {
+            calcImpedance();
+        }
+
+        /** Prepares the capacitor to operate at a new sample rate */
+        void prepare (T sampleRate)
+        {
+            fs = sampleRate;
+            propagateImpedanceChange();
+
+            reset();
+        }
+
+        void reset()
+        {
+            z = (T) 0;
+            v_1 = (T) 0;
+        }
+
+        /** Sets the capacitance value of the series resistor, in Farads. */
+        void setCapacitanceValue (T newC)
+        {
+            if (newC == C_value)
+                return;
+
+            C_value = newC;
+            propagateImpedanceChange();
+        }
+
+        /** Computes the impedance of the WDF capacitor,
+         *             1
+         * Z_C = --------------
+         *        2 * f_s * C
+         */
+        inline void calcImpedance() override
+        {
+            wdf.R = (T) 1.0 / ((T) 2.0 * C_value * fs);
+            wdf.G = (T) 1.0 / wdf.R;
+        }
+
+        /** Sets the voltage of the voltage source, in Volts */
+        void setVoltage (T newV)
+        {
+            v_0 = newV;
+        }
+
+        /** Accepts an incident wave into a WDF resistive voltage source. */
+        inline void incident (T x) noexcept
+        {
+            wdf.a = x;
+            z = wdf.a;
+        }
+
+        /** Propogates a reflected wave from a WDF resistive voltage source. */
+        inline T reflected() noexcept
+        {
+            wdf.b = z + v_0 - v_1;
+            v_1 = v_0;
+            return wdf.b;
+        }
+
+        WDFMembers<T> wdf;
+
+    private:
+        T C_value = (T) 1.0e-6;
+
+        T z {};
+        T v_0 {};
+        T v_1 {};
+
+        T fs;
+    };
+
     /** WDF Current source (non-adaptable) */
     template <typename T, typename Next>
     class IdealCurrentSourceT final : public RootWDF
@@ -6379,6 +6654,8 @@ namespace signum
 #define OMEGA_H_INCLUDED
 
 #include <algorithm>
+#include <cstdint>
+#include <cstddef>
 // #include "sample_type.h"
 
 
@@ -6570,7 +6847,7 @@ namespace Omega
     template <>
     CHOWDSP_WDF_MAYBE_UNUSED constexpr double exp_approx (double x)
     {
-        x = std::max (-126.0, 1.442695040888963 * x);
+        x = std::max ((double) -126.0, 1.442695040888963 * x);
 
         union
         {
@@ -6676,6 +6953,14 @@ namespace Omega
         return y - (y - exp_approx<T> (x - y)) / (y + (T) 1);
     }
 
+    struct Omega
+    {
+        template <typename T>
+        static T omega (T x)
+        {
+            return omega4 (x);
+        }
+    };
 } // namespace Omega
 } // namespace chowdsp
 
@@ -6698,7 +6983,7 @@ namespace wdft
      * See Werner et al., "An Improved and Generalized Diode Clipper Model for Wave Digital Filters"
      * https://www.researchgate.net/publication/299514713_An_Improved_and_Generalized_Diode_Clipper_Model_for_Wave_Digital_Filters
      */
-    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best>
+    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best, typename OmegaProvider = Omega::Omega>
     class DiodePairT final : public RootWDF
     {
     public:
@@ -6760,7 +7045,7 @@ namespace wdft
         {
             // See eqn (18) from reference paper
             T lambda = (T) signum::signum (wdf.a);
-            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * Omega::omega4 (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
+            wdf.b = wdf.a + (T) 2 * lambda * (R_Is - Vt * OmegaProvider::omega (logR_Is_overVt + lambda * wdf.a * oneOverVt + R_Is_overVt));
         }
 
         /** Implementation for float/double (Best). */
@@ -6792,7 +7077,7 @@ namespace wdft
      * See Werner et al., "An Improved and Generalized Diode Clipper Model for Wave Digital Filters"
      * https://www.researchgate.net/publication/299514713_An_Improved_and_Generalized_Diode_Clipper_Model_for_Wave_Digital_Filters
      */
-    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best>
+    template <typename T, typename Next, DiodeQuality Quality = DiodeQuality::Best, typename OmegaProvider = Omega::Omega>
     class DiodeT final : public RootWDF
     {
     public:
@@ -6841,7 +7126,7 @@ namespace wdft
         inline T reflected() noexcept
         {
             // See eqn (10) from reference paper
-            wdf.b = wdf.a + twoR_Is - twoVt * Omega::omega4 (logR_Is_overVt + wdf.a * oneOverVt + R_Is_overVt);
+            wdf.b = wdf.a + twoR_Is - twoVt * OmegaProvider::omega (logR_Is_overVt + wdf.a * oneOverVt + R_Is_overVt);
             return wdf.b;
         }
 
