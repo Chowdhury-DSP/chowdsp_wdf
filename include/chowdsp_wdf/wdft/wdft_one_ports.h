@@ -63,10 +63,10 @@ namespace wdft
     public:
         /** Creates a new WDF Capacitor.
          * @param value: Capacitance value in Farads
-         * @param fs: WDF sample rate
+         * @param _fs: WDF sample rate
          */
-        explicit CapacitorT (T value, T fs = (T) 48000.0) : C_value (value),
-                                                            fs (fs)
+        explicit CapacitorT (T value, T _fs = (T) 48000.0) : C_value (value),
+                                                             fs (_fs)
         {
             calcImpedance();
         }
