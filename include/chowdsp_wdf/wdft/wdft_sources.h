@@ -58,7 +58,7 @@ namespace wdft
         /** Sets the resistance value of the series resistor, in Ohms. */
         void setResistanceValue (T newR)
         {
-            if (newR == R_value)
+            if (all (newR == R_value))
                 return;
 
             R_value = newR;
@@ -245,7 +245,7 @@ namespace wdft
         /** Sets the resistance value of the parallel resistor, in Ohms. */
         void setResistanceValue (T newR)
         {
-            if (newR == R_value)
+            if (all (newR == R_value))
                 return;
 
             R_value = newR;
