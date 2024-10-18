@@ -1,8 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 project(chowdsp_wdf VERSION 1.0.0 LANGUAGES C CXX)
 include(cmake/CXXStandard.cmake)
-
-include(cmake/CPM.cmake)
 
 message(STATUS "Configuring ${PROJECT_NAME} library...")
 add_library(${PROJECT_NAME} INTERFACE)
@@ -39,9 +37,11 @@ if(NOT ("${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION}" STREQUAL ""))
 endif()
 
 if (CHOWDSP_WDF_BUILD_TESTS)
+    include(cmake/CPM.cmake)
     add_subdirectory(tests)
 endif()
 
 if (CHOWDSP_WDF_BUILD_BENCHMARKS)
+    include(cmake/CPM.cmake)
     add_subdirectory(bench)
 endif()
