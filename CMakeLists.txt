@@ -1,8 +1,6 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 project(chowdsp_wdf VERSION 1.0.0 LANGUAGES C CXX)
 include(cmake/CXXStandard.cmake)
-
-include(cmake/CPM.cmake)
 
 message(STATUS "Configuring ${PROJECT_NAME} library...")
 add_library(${PROJECT_NAME} INTERFACE)
@@ -30,6 +28,7 @@ option(CHOWDSP_WDF_BUILD_BENCHMARKS "Add targets for building and running chowds
 
 set(CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION "" CACHE STRING "Tests chowdsp_wdf with XSIMD version")
 if(NOT ("${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION}" STREQUAL ""))
+    include(cmake/CPM.cmake)
     message(STATUS "Importing XSIMD version ${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION} with CPM")
     CPMAddPackage(
         NAME xsimd
@@ -39,9 +38,11 @@ if(NOT ("${CHOWDSP_WDF_TEST_WITH_XSIMD_VERSION}" STREQUAL ""))
 endif()
 
 if (CHOWDSP_WDF_BUILD_TESTS)
+    include(cmake/CPM.cmake)
     add_subdirectory(tests)
 endif()
 
 if (CHOWDSP_WDF_BUILD_BENCHMARKS)
+    include(cmake/CPM.cmake)
     add_subdirectory(bench)
 endif()
