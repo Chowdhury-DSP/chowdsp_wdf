@@ -31,8 +31,8 @@ namespace wdf
     public:
         Open() : WDF<T> ("Open")
         {
-            this->R = (T) 1.0e15;
-            this->G = (T) 1.0 / this->R;
+            this->wdf.R = (T) 1.0e15;
+            this->wdf.G = (T) 1.0 / this->wdf.R;
         }
 
         inline void calcImpedance() override {}
@@ -40,14 +40,14 @@ namespace wdf
         /** Accepts an incident wave into a WDF open. */
         inline void incident (T x) noexcept override
         {
-            this->a = x;
+            this->wdf.a = x;
         }
 
         /** Propogates a reflected wave from a WDF open. */
         inline T reflected() noexcept override
         {
-            this->b = this->a;
-            return this->b;
+            this->wdf.b = this->wdf.a;
+            return this->wdf.b;
         }
     };
 
@@ -58,8 +58,8 @@ namespace wdf
     public:
         Short() : WDF<T> ("Short")
         {
-            this->R = (T) 1.0e-15;
-            this->G = (T) 1.0 / this->R;
+            this->wdf.R = (T) 1.0e-15;
+            this->wdf.G = (T) 1.0 / this->wdf.R;
         }
 
         inline void calcImpedance() override {}
@@ -67,14 +67,14 @@ namespace wdf
         /** Accepts an incident wave into a WDF short. */
         inline void incident (T x) noexcept override
         {
-            this->a = x;
+            this->wdf.a = x;
         }
 
         /** Propogates a reflected wave from a WDF short. */
         inline T reflected() noexcept override
         {
-            this->b = -this->a;
-            return this->b;
+            this->wdf.b = -this->wdf.a;
+            return this->wdf.b;
         }
     };
 
