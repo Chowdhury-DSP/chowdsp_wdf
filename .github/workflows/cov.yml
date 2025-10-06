@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
       matrix:
-        xsimd_version: ["", "8.0.5"]
+        xsimd_version: ["", "13.2.0"]
 
     steps:
       - name: Install Linux Deps
