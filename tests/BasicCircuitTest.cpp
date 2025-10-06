@@ -281,4 +281,28 @@ TEST_CASE ("Basic Circuits Test")
         doImpedanceChecks (
             ResistiveCurrentSource<float> { 1000.0f }, 1000.0f, 2000.0f, [=] (auto& r, float value) { r.setResistanceValue (value); }, [=] (float value) { return value; });
     }
+
+    SECTION ("Open Test")
+    {
+        ResistiveVoltageSource<float> Vin { 1.0e3f };
+        Open<float> open {};
+
+        Vin.setVoltage (10.0f);
+        open.incident (Vin.reflected());
+        Vin.incident (open.reflected());
+
+        REQUIRE (open.voltage() == 10.0f);
+    }
+
+    SECTION ("Short Test")
+    {
+        ResistiveVoltageSource<float> Vin { 1.0e3f };
+        Short<float> sh {};
+
+        Vin.setVoltage (10.0f);
+        sh.incident (Vin.reflected());
+        Vin.incident (sh.reflected());
+
+        REQUIRE (sh.voltage() == 0.0f);
+    }
 }
