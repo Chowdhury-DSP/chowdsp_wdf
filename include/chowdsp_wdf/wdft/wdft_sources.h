@@ -131,7 +131,7 @@ namespace wdft
         /** Sets the capacitance value of the series resistor, in Farads. */
         void setCapacitanceValue (T newC)
         {
-            if (newC == C_value)
+            if (all (newC == C_value))
                 return;
 
             C_value = newC;
