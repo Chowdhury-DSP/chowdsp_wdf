@@ -156,7 +156,8 @@ namespace wdf
                 i++;
             }
 
-            this->wdf.b = b_vec[m_upPortIndex];
+            // S_matrix[m_upPortIndex][m_upPortIndex] is zero, so this is fine without a fresh a_vec[m_upPortIndex].
+            this->wdf.b = rtype_detail::RtypeScatterSingle (S_matrix, a_vec, m_upPortIndex);
             return this->wdf.b;
         }
 

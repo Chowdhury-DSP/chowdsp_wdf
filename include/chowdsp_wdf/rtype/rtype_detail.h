@@ -130,6 +130,16 @@ namespace wdft
             }
         }
 #endif // XSIMD
+
+        /** Computes a single output of the scattering matrix: b[outIndex] = sum_r S_[r][outIndex] * a_[r]. */
+        template <typename T, int numPorts>
+        constexpr T RtypeScatterSingle (const Matrix<T, numPorts>& S_, const AlignedArray<T, numPorts>& a_, int outIndex)
+        {
+            T b = S_[0][outIndex] * a_[0];
+            for (int r = 1; r < numPorts; ++r)
+                b += S_[r][outIndex] * a_[r];
+            return b;
+        }
     } // namespace rtype_detail
 } // namespace wdft
 
@@ -248,6 +258,17 @@ namespace wdf
             }
         }
 #endif // XSIMD
+
+        /** Computes a single output of the scattering matrix: b[outIndex] = sum_r S_[r][outIndex] * a_[r]. */
+        template <typename T>
+        T RtypeScatterSingle (const Matrix<T>& S_, const AlignedArray<T>& a_, int outIndex)
+        {
+            const auto numPorts = a_.size();
+            T b = S_[0][outIndex] * a_[0];
+            for (int r = 1; r < numPorts; ++r)
+                b += S_[r][outIndex] * a_[r];
+            return b;
+        }
     } // namespace rtype_detail
 } // namespace wdf
 #endif // DOXYGEN

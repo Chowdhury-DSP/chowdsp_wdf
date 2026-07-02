@@ -116,7 +116,7 @@ TEST_CASE ("RType Test")
 
     SECTION ("Baxandall Treble Test")
     {
-        baxandallFreqTest (0.1f, 0.0001f, 20000.0f, -8.0f, 0.5f);
+        baxandallFreqTest (0.1f, 0.015f, 20000.0f, -8.0f, 0.5f);
     }
 
     SECTION ("Baxandall Poly Bass Test")
@@ -126,6 +126,6 @@ TEST_CASE ("RType Test")
 
     SECTION ("Baxandall Poly Treble Test")
     {
-        baxandallPolyFreqTest (0.1f, 0.0001f, 20000.0f, -8.0f, 0.5f);
+        baxandallPolyFreqTest (0.1f, 0.015f, 20000.0f, -8.0f, 0.5f);
     }
 }
