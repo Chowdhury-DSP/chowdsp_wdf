@@ -90,7 +90,8 @@ namespace wdft
                                               a_vec[portIndex] = port.reflected(); },
                                           downPorts);
 
-            wdf.b = b_vec[upPortIndex];
+            // S_matrix[upPortIndex][upPortIndex] is zero, so this is fine without a fresh a_vec[upPortIndex].
+            wdf.b = rtype_detail::RtypeScatterSingle (S_matrix, a_vec, upPortIndex);
             return wdf.b;
         }
 
